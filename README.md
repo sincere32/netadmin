@@ -1,0 +1,2 @@
+# netadmin
+netadmin console
