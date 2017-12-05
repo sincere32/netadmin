@@ -1,0 +1,98 @@
+swagger: "2.0"
+info:
+  title: NetAdmin API
+  description: Netadmin has every tool to get any job done, so codename for the new
+    netadmin APIs.
+  version: 1.0.0
+  contact:
+    email: zengqi0529@163.com
+basePath: /v1.0.0
+paths:
+  /authority/:
+    get:
+      tags:
+      - authority
+      description: Get Authority
+      operationId: AuthorityController.Get Authority List
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.AuthorityList'
+        "404":
+          description: None
+        "405":
+          description: Not Allowed
+    post:
+      tags:
+      - authority
+      description: Add Authority,if full and rw are false, then authority is readonly
+      operationId: AuthorityController.Add Authority
+      parameters:
+      - in: body
+        name: post_body
+        description: '{name:''your name '',full: false, rw:false}'
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Authority'
+        "404":
+          description: body is empty
+    patch:
+      tags:
+      - authority
+      description: Update Authority,if full and rw are false, then authority is readonly
+      operationId: AuthorityController.Update Authority
+      parameters:
+      - in: body
+        name: patch_body
+        description: '{name:''your name '',full: false, rw:false}'
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Authority'
+        "404":
+          description: body is empty
+  /authority/{name}:
+    get:
+      tags:
+      - authority
+      description: Get Authority
+      operationId: AuthorityController.Get Authority
+      parameters:
+      - in: path
+        name: name
+        description: authority name
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Authority'
+        "404":
+          description: body is empty
+    delete:
+      tags:
+      - authority
+      description: Delete Authority
+      operationId: AuthorityController.Delete Authority
+      parameters:
+      - in: path
+        name: name
+        description: authority name
+        required: true
+        type: string
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/.Authority'
+        "404":
+          description: body is empty
+definitions:
+  .Authority:
+    type: object
+  .AuthorityList:
+    type: object
