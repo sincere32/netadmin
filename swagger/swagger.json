@@ -49,7 +49,7 @@
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/.Authority"
+                            "$ref": "#/definitions/models.Authority"
                         }
                     },
                     "404": {
@@ -75,7 +75,7 @@
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/.Authority"
+                            "$ref": "#/definitions/models.Authority"
                         }
                     },
                     "404": {
@@ -103,7 +103,7 @@
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/.Authority"
+                            "$ref": "#/definitions/models.Authority"
                         }
                     },
                     "404": {
@@ -129,7 +129,135 @@
                 "responses": {
                     "200": {
                         "schema": {
-                            "$ref": "#/definitions/.Authority"
+                            "$ref": "#/definitions/models.Authority"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/user/": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get User",
+                "operationId": "UserController.Get User List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/.UserList"
+                        }
+                    },
+                    "404": {
+                        "description": "None"
+                    },
+                    "405": {
+                        "description": "Not Allowed"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Add User,name password authority_id is required",
+                "operationId": "UserController.Add User",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',password: 'password', authority_id:'id',tel:'12345678901', email:'xx@ff.com'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Update User,User,name password authority_id is required",
+                "operationId": "UserController.Update User",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "patch_body",
+                        "description": "{name:'your name ',password: 'password', authority_id:id,tel:12345678901, email:'xx@ff.com'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/user/{name}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get User",
+                "operationId": "UserController.Get User",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "User name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Delete User",
+                "operationId": "UserController.Delete User",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "User name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "404": {
@@ -140,11 +268,56 @@
         }
     },
     "definitions": {
-        ".Authority": {
-            "type": "object"
-        },
         ".AuthorityList": {
             "type": "object"
+        },
+        ".UserList": {
+            "type": "object"
+        },
+        "models.Authority": {
+            "title": "Authority",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "full": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rw": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.User": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "authority_id": {
+                    "$ref": "#/definitions/models.Authority"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
         }
     }
 }
