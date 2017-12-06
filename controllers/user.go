@@ -6,7 +6,11 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 
+
 	"gitee.com/pippozq/netadmin/models"
+
+	"time"
+
 )
 
 type AuthorityController struct {
@@ -15,9 +19,8 @@ type AuthorityController struct {
 
 // @Title Get Authority List
 // @Description Get Authority
-// @Success 200 {object} models.AuthorityList
-// @Failure 404 None
-// @Failure 405 Not Allowed
+// @Success 200 {object} []models.Authority
+// @Failure 404 Not Found
 // @router / [get]
 func (a *AuthorityController) GetAuthorityList() {
 	o := orm.NewOrm()
@@ -142,7 +145,7 @@ type UserController struct {
 
 // @Title Get User List
 // @Description Get User
-// @Success 200 {object} models.UserList
+// @Success 200 {object} []models.User
 // @Failure 404 None
 // @Failure 405 Not Allowed
 // @router / [get]
@@ -172,7 +175,7 @@ func (a *UserController) GetUser() {
 	var user models.User
 	var users []models.User
 
-	o.QueryTable(user).Filter("name",name).RelatedSel().All(&users)
+	o.QueryTable(user).Filter("name", name).RelatedSel().All(&users)
 	a.ReturnOrmJson(0, int64(len(users)), users)
 
 }
@@ -189,25 +192,29 @@ func (a *UserController) AddUser() {
 
 	user := new(models.User)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
+	beego.Info(user)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
 		if o.Read(user, "Name") == orm.ErrNoRows {
+			if user.Authority == nil {
+				a.ReturnJson(-1, "No Authority")
+			} else {
+				authority := new(models.Authority)
+				authority = user.Authority
 
-			authority := new(models.Authority)
-			authority = user.Authority
-
-			if o.Read(authority) == orm.ErrNoRows{
-				a.ReturnJson(-1, "No such authority")
-			}else{
-
-				if _, insertErr := o.Insert(user); insertErr == nil {
-					a.ReturnOrmJson(0, 1, user)
+				if o.Read(authority) == orm.ErrNoRows {
+					a.ReturnJson(-1, "No such authority")
 				} else {
-					a.ReturnJson(0, insertErr.Error())
-				}
-			}
 
+					if _, insertErr := o.Insert(user); insertErr == nil {
+						a.ReturnOrmJson(0, 1, user)
+					} else {
+						a.ReturnJson(0, insertErr.Error())
+					}
+				}
+
+			}
 		} else {
 			a.ReturnJson(1, "This Name Already Exist")
 		}
@@ -242,7 +249,7 @@ func (a *UserController) UpdateUser() {
 
 			if o.Read(authority) == orm.ErrNoRows {
 				a.ReturnJson(-1, "No such authority")
-			}else{
+			} else {
 				query.Authority = authority
 				if _, updateErr := o.Update(&query); updateErr == nil {
 					a.ReturnOrmJson(0, 1, query)
@@ -280,4 +287,126 @@ func (a *UserController) DeleteUser() {
 	} else {
 		a.ReturnJson(1, "No Such Name Exist")
 	}
+}
+
+type AuthenticationController struct {
+	utils.BaseController
+}
+
+// @Title Login
+// @Description Login
+// @Param   post_body body  string  true "{"name":'your name ',"password": 'password'}"
+// @Success 200  {"status": "-1 error 0 succeed 1 failed", msg:""}
+// @Failure 404 body is empty
+// @router / [post]
+func (a *AuthenticationController) Login() {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	user := new(models.User)
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
+	if err == nil {
+		var query []models.User
+
+		qs := o.QueryTable(user)
+
+		// Check User Exist
+
+		qs.Filter("name", user.Name).All(&query)
+
+		if len(query) == 0 {
+			a.ReturnJson(1, "No such User")
+		} else {
+			if query[0].Password != user.Password {
+				a.ReturnJson(1, "Password is Wrong")
+			} else {
+				sess := a.StartSession()
+				defer sess.SessionRelease(a.Ctx.ResponseWriter)
+				s := a.CruSession.Get(beego.AppConfig.String("login_session"))
+				if s == nil {
+					nowTime := time.Now()
+					sValue := nowTime.Format("20170102150405")
+					a.CruSession.Set(beego.AppConfig.String("login_session"),sValue)
+					a.Ctx.SetCookie(beego.AppConfig.String("login_session"), sValue)
+					a.ReturnJson(0, "Authentication Success")
+				} else {
+					a.ReturnJson(1, "Expired")
+				}
+
+			}
+
+		}
+	} else {
+		a.ReturnJson(-1, err.Error())
+	}
+}
+
+// @Title Logout
+// @Description Logout
+// @Param   name path  string  true "me"
+// @Success 200 {"status":" 0 success 1 error", "msg":""}
+// @Failure 404 body is empty
+// @router /:name [delete]
+func (a *AuthenticationController) Logout() {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	name := a.GetString(":name")
+
+	var user models.User
+	var query []models.User
+
+	o.QueryTable(user).Filter("name", name).RelatedSel().All(&query)
+
+	if len(query) == 0 {
+		a.ReturnJson(1, "No such User")
+	} else {
+		sess := a.StartSession()
+		defer sess.SessionRelease(a.Ctx.ResponseWriter)
+		ses := a.CruSession.Get(beego.AppConfig.String("login_session"))
+		if ses != nil {
+			a.DestroySession()
+			a.CruSession.Flush()
+			a.ReturnJson(1, "Authentication Delete")
+		} else {
+			a.ReturnJson(0, "No Authentication Expired")
+		}
+	}
+
+}
+
+// @Title Check Online Status
+// @Description Check Online Status
+// @Param  name path  string  true "me"
+// @Success 200 {"status":"0 expired 1 not expired 2 no user", "msg":""}
+// @Failure 404 not found
+// @router /:name [get]
+func (a *AuthenticationController) CheckLogin() {
+
+	o := orm.NewOrm()
+	o.Using("default")
+
+	name := a.GetString(":name")
+
+	user := models.User{Name: name}
+
+	if o.Read(&user, "Name") != orm.ErrNoRows {
+		sess := a.StartSession()
+		defer sess.SessionRelease(a.Ctx.ResponseWriter)
+		ses := a.CruSession.Get(beego.AppConfig.String("login_session"))
+		cookie := a.Ctx.GetCookie(beego.AppConfig.String("login_session"))
+		if ses != nil {
+			if ses == cookie{
+				a.ReturnJson(0, "Authentication Expired")
+			}else{
+				a.ReturnJson(0, "Authentication Error")
+			}
+
+		} else {
+			a.ReturnJson(1, "No Authentication Expired")
+		}
+	} else {
+		a.ReturnJson(2, "No Such User Exist")
+	}
+
 }

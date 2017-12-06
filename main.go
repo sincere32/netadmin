@@ -5,10 +5,11 @@ import (
 	"fmt"
 	_ "gitee.com/pippozq/netadmin/models"
 	_ "gitee.com/pippozq/netadmin/routers"
+	"gitee.com/pippozq/netadmin/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	_ "github.com/astaxie/beego/session/redis"
 	_ "github.com/lib/pq"
-	"gitee.com/pippozq/netadmin/utils"
 )
 
 func InitDBPool(initDb string) error {
@@ -54,6 +55,7 @@ func main() {
 	if err != nil {
 		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
 	} else {
+
 		beego.ErrorController(&utils.BaseController{})
 		beego.Run()
 	}
