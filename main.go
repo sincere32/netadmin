@@ -40,11 +40,15 @@ func InitDBPool(initDb string) error {
 }
 func main() {
 	beego.SetLevel(beego.LevelInformational)
-	beego.BConfig.WebConfig.DirectoryIndex = true
-	beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 
 	initDb := flag.String("syncdb", "no", "init db")
+	mode := flag.String("mode", "test", "run mode")
 	flag.Parse()
+
+	beego.BConfig.RunMode = *mode
+
+	beego.BConfig.WebConfig.DirectoryIndex = true
+	beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 
 	err := InitDBPool(*initDb)
 	if err != nil {

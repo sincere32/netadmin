@@ -53,3 +53,15 @@ func (base *BaseController) Error404() {
 	}
 	base.ServeJSON()
 }
+
+func (base *BaseController) Error500() {
+	type ReturnJson struct {
+		Status int         `json:"status"`
+		Msg    interface{} `json:"msg"`
+	}
+	base.Data["json"] = ReturnJson{
+		Status: 500,
+		Msg:    "Internal Error",
+	}
+	base.ServeJSON()
+}
