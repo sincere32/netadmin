@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>User Manager</title>
+    <meta name="viewport" content="width=user-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <link rel="shortcut icon" href="assets/img/favicon.ico"/>
+    <!-- Loading Bootstrap -->
+    <link href="assets/css/backend.min.css" rel="stylesheet">
+    <!--<link href="assets/css/bootstrap.css" rel="stylesheet">-->
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="assets/js/html5shiv.js"></script>
+    <script src="assets/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="assets/js/jquery-3.2.1.min.js"></script>
+    <script src="assets/js/bootstrap-3.3.7.min.js"></script>
+    <script src="assets/js/jquery.dataTables.min.js"></script>
+    <script src="assets/js/dataTables.bootstrap.min.js"></script>
+
+    <style type="text/css">
+        @media screen and (-webkit-min-user-pixel-ratio: 0) {
+            .form-control.input-sm {
+                padding: 0px 20px 5px 10px;
+            }
+        }
+
+        .dataTables_filter {
+            display: none;
+        }
+
+    </style>
+</head>
+
+<body class="inside-header inside-aside ">
+<div id="main" role="main">
+    <div class="tab-content tab-addtabs">
+        <div id="content">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <section class="content-header hide">
+                        <h1> Dashboard
+                            <small>Control panel</small>
+                        </h1>
+                    </section>
+                    <!-- RIBBON -->
+                    <div id="ribbon">
+                        <ol class="breadcrumb pull-left">
+                            <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                        </ol>
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="javascript:;" data-url="page.html">User Manager</a></li>
+                        </ol>
+                    </div>
+                    <!-- END RIBBON -->
+                    <div class="content">
+                        <div class="panel panel-default panel-intro">
+
+                            <div class="panel-body">
+                                <div id="myTabContent" class="tab-content">
+                                    <div class="tab-pane fade active in" id="one">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="pannel pannel-primary">
+                                                <div class="pannel-heading">
+                                                    <div class="panel-title"><h3>User</h3></div>
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div class="row">
+                                                        <div class="fixed-table-toolbar">
+                                                            <div class="pull-right search">
+                                                                <form class="form-inline">
+                                                                    <div class="form-group">
+                                                                        <label class="title">Search </label>
+                                                                        <input class="form-control"
+                                                                               type="text"
+                                                                               id="user_search"
+                                                                               placeholder="Search">
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <div class="bs-bars pull-left">
+                                                                <div id="toolbar" class="toolbar">
+                                                                    <button class="btn btn-primary btn-refresh"
+                                                                            onclick="refresh()"><i
+                                                                            class="fa fa-refresh"></i></button>
+                                                                    <button class="btn btn-success btn-add"
+                                                                            data-toggle="modal"
+                                                                            data-target="#modal_add_user"><i
+                                                                            class="fa fa-plus"></i> Add
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <table id="user_table"
+                                                               class="table table-bordered"
+                                                               width="100%">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Authority</th>
+                                                                <th>Email</th>
+                                                                <th>Tel</th>
+                                                            </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </div>
+                                                    <!-- Add User（Modal） -->
+                                                    <div class="modal fade" id="modal_add_user" tabindex="-1"
+                                                         role="dialog"
+                                                         aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                            data-dismiss="modal" aria-hidden="true">
+                                                                        &times;
+                                                                    </button>
+                                                                    <h4 class="modal-title">Add</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form class="form" role="form">
+                                                                        <div class="form-group">
+                                                                            <label>User Name</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="add_user_name"
+                                                                                   placeholder="User Name">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>User Authority</label>
+                                                                            <select class="form-control"
+                                                                                   id="add_user_authority"
+                                                                            ></select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Password</label>
+                                                                            <input type="password" class="form-control"
+                                                                                   id="add_user_password"
+                                                                                   placeholder="password">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Email</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="add_user_email"
+                                                                                   placeholder="email">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Tel</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="add_user_tel"
+                                                                                   placeholder="Tel">
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-default"
+                                                                            data-dismiss="modal">Close
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-primary"
+                                                                            onclick="add_user()">Add
+                                                                    </button>
+                                                                </div>
+                                                            </div><!-- /.modal-content -->
+                                                        </div><!-- /.modal -->
+                                                    </div>
+
+                                                    <!-- Update user（Modal） -->
+                                                    <div class="modal fade" id="modal_update_user" tabindex="-1"
+                                                         role="dialog"
+                                                         aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                            data-dismiss="modal" aria-hidden="true">
+                                                                        &times;
+                                                                    </button>
+                                                                    <h4 class="modal-title">
+                                                                        user Edit</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form class="form" role="form">
+                                                                        <div class="form-group">
+                                                                            <label>User Name</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="update_user_name"
+                                                                                   placeholder="User Name">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>User Authority</label>
+                                                                            <select class="form-control"
+                                                                                    id="update_user_authority"
+                                                                            ></select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Password</label>
+                                                                            <input type="password" class="form-control"
+                                                                                   id="update_user_password"
+                                                                                   placeholder="password">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Email</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="update_user_email"
+                                                                                   placeholder="email">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Tel</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="update_user_tel"
+                                                                                   placeholder="Tel">
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" style="float: left"
+                                                                            class="btn btn-danger"
+                                                                            data-dismiss="modal"
+                                                                            onclick="delete_user()">Delete
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-default"
+                                                                            data-dismiss="modal">Close
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-primary"
+                                                                            onclick="update_user()">Update
+                                                                    </button>
+                                                                </div>
+                                                            </div><!-- /.modal-content -->
+                                                        </div><!-- /.modal -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        format_user("/v1.0.0/user/");
+        $("#user_search").on("keyup click", function () {
+            $('#user_table').DataTable().search(
+                $('#user_search').val()
+            ).draw();
+        });
+    });
+
+    // set authority select
+    function init_authority(authority_select, data) {
+        authority_select.empty();
+        authority_select.append("<option selected='selected'  value=-1>Select Authority</option>");
+        for (var i=0;i<data.length;i++){
+            authority_select.append("<option value=" + data[i]['id'] + ">" + data[i]['name'] + "</option>");
+        }
+    }
+    // Init Add User Modal
+    $("#modal_add_user").on("shown.bs.modal", function () {
+        $.ajax({
+            type: "GET",
+            url: "/v1.0.0/authority",
+            success: function (data) {
+                init_authority($("#add_user_authority"), data.data)
+            }
+        });
+    });
+
+
+    function refresh() {
+        format_user("/v1.0.0/user");
+    }
+
+    // add user
+    function add_user() {
+
+        var user_name = $("#add_user_name").val();
+        var user_password = $("#add_user_password").val();
+        var user_email = $("#add_user_email").val();
+        var user_tel = $("#add_user_tel").val();
+        var user_authority = $("#add_user_authority option:selected").val();
+
+
+        if (user_name != "" && user_password != "" && user_authority != -1) {
+            var post_json = JSON.stringify({
+                "name": user_name,
+                "password": user_password,
+                "email":user_email,
+                "tel":user_tel,
+                "authority_id":{
+                    "id":parseInt(user_authority)
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: "/v1.0.0/user/",
+                data: post_json,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 0) {
+                        format_user("/v1.0.0/user");
+                        $("#modal_add_user").modal("hide");
+                    }else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        } else {
+            alert("user name or password or authority is null")
+        }
+    }
+
+    // update user
+    function update_user() {
+        var user_name = $("#update_user_name").val();
+        var user_password = $("#update_user_password").val();
+        var user_email = $("#update_user_email").val();
+        var user_tel = $("#update_user_tel").val();
+        var user_authority = $("#update_user_authority option:selected").val();
+
+        if (user_name != "" && user_password != "") {
+
+            var post_json = JSON.stringify({
+                "name": user_name,
+                "password": user_password,
+                "email":user_email,
+                "tel":user_tel,
+                "authority_id":{
+                    "id":parseInt(user_authority)
+                }
+            });
+            $.ajax({
+                type: "PATCH",
+                url: "/v1.0.0/user",
+                data: post_json,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 0) {
+                        format_user("/v1.0.0/user");
+                        $("#modal_update_user").modal("hide");
+                    }else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        } else {
+            alert("user name or password  is null")
+        }
+    }
+
+    // delete user
+    function delete_user() {
+        var user_name = $("#update_user_name").val();
+        if (user_name != ""){
+            $.ajax({
+                type: "DELETE",
+                url: "/v1.0.0/user/"+user_name,
+                success: function (data) {
+                    if (data.status == 0) {
+                        format_user("/v1.0.0/user");
+                        $("#modal_update_user").modal("hide");
+                    }else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        }else{
+            alert("User Name is Null");
+        }
+
+    }
+
+    function format_user(url) {
+
+        var table = $('#user_table');
+        table.dataTable().fnDestroy();
+        table.dataTable({
+            PaginationType: "full_numbers",
+            sort: true,
+            processing: true,
+            serverSide: false,
+            paging: true,
+            lengthChange: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            ajax: {
+                url: url
+            },
+            columns: [
+                {"data": "name"},
+                {"data": "authority_id.name"},
+                {"data": "email"},
+                {"data": "tel"}
+            ]
+        });
+        // Table Selected
+        $('#user_table tbody').on("click", "tr", function () {
+            if ($(this).hasClass("selected")) {
+                $(this).removeClass("selected");
+            }
+            else {
+                table.$("tr.selected").removeClass("selected");
+                $(this).addClass("selected");
+
+                var user_name = "";
+                var user_password = "";
+                var user_email = "";
+                var user_tel = "";
+                var user_authority_id = "";
+                var user_authority_name = "";
+                var nTrs = table.dataTable().fnGetNodes();
+                for (var i = 0; i < nTrs.length; i++) {
+                    if ($(nTrs[i]).hasClass("selected")) {
+                        var t = table.dataTable().fnGetData(nTrs[i]);
+                        user_name = t["name"];
+                        user_password = t["password"];
+                        user_email = t["email"];
+                        user_tel = t["tel"];
+                        user_authority_id = t["authority_id"]["id"];
+                        user_authority_name = t['authority_id']["name"];
+                        break;
+                    }
+                }
+
+                $("#update_user_name").val(user_name);
+                $("#update_user_password").val(user_password);
+                $("#update_user_email").val(user_email);
+                $("#update_user_tel").val(user_tel);
+
+
+                var authority_select = $("#update_user_authority");
+
+                $.ajax({
+                    type: "GET",
+                    url: "/v1.0.0/authority",
+                    success: function (data) {
+                        authority_select.empty();
+                        for (var i=0;i<data.data.length;i++){
+                            console.log(data.data[i]['id'], user_authority_id, user_authority_name);
+                            if (data.data[i]['id'] == user_authority_id){
+                                authority_select.append("<option selected='selected' value="+user_authority_id+">"+user_authority_name +"</option>");
+                            }else{
+                                authority_select.append("<option value=" + data.data[i]['id'] + ">" + data.data[i]['name'] + "</option>");
+                            }
+
+                        }
+                    }
+                });
+
+                $("#modal_update_user").modal("show");
+            }
+        });
+    }
+</script>
+</body>
+</html>
+

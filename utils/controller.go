@@ -4,16 +4,32 @@ import (
 	"github.com/astaxie/beego"
 )
 
+type ReturnTable struct {
+	RecordsTotal    int         `json:"recordsTotal"`
+	RecordsFiltered int         `json:"recordsFiltered"`
+	TableData       interface{} `json:"data"`
+}
+
 type BaseController struct {
 	beego.Controller
 }
-
 
 type FormatJsonInterface interface {
 	EncodeJson(status int, msg interface{})
 }
 
 // Format Return Body
+
+func (base *BaseController) ReturnTableJson(total, records int, data interface{}) {
+
+	base.Data["json"] = ReturnTable{
+		RecordsTotal:    total,
+		RecordsFiltered: records,
+		TableData:       data,
+	}
+	base.ServeJSON()
+}
+
 func (base *BaseController) ReturnJson(status int, msg interface{}) {
 	type ReturnJson struct {
 		Status int         `json:"status"`

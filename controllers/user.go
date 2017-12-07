@@ -6,11 +6,9 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 
-
 	"gitee.com/pippozq/netadmin/models"
 
 	"time"
-
 )
 
 type AuthorityController struct {
@@ -30,7 +28,7 @@ func (a *AuthorityController) GetAuthorityList() {
 	var authorities []models.Authority
 	o.QueryTable(authority).All(&authorities)
 
-	a.ReturnOrmJson(0, int64(len(authorities)), authorities)
+	a.ReturnTableJson(len(authorities), len(authorities), authorities)
 }
 
 // @Title Get Authority
@@ -145,7 +143,7 @@ type UserController struct {
 
 // @Title Get User List
 // @Description Get User
-// @Success 200 {object} []models.User
+// @Success 200 {object} []utils.ReturnTable
 // @Failure 404 None
 // @Failure 405 Not Allowed
 // @router / [get]
@@ -157,7 +155,7 @@ func (a *UserController) GetUserList() {
 	var users []models.User
 	o.QueryTable(user).RelatedSel().All(&users)
 
-	a.ReturnOrmJson(0, int64(len(users)), users)
+	a.ReturnTableJson(len(users), len(users), users)
 }
 
 // @Title Get User
@@ -210,13 +208,13 @@ func (a *UserController) AddUser() {
 					if _, insertErr := o.Insert(user); insertErr == nil {
 						a.ReturnOrmJson(0, 1, user)
 					} else {
-						a.ReturnJson(0, insertErr.Error())
+						a.ReturnJson(1, insertErr.Error())
 					}
 				}
 
 			}
 		} else {
-			a.ReturnJson(1, "This Name Already Exist")
+			a.ReturnJson(2, "This Name Already Exist")
 		}
 
 	}
@@ -254,11 +252,11 @@ func (a *UserController) UpdateUser() {
 				if _, updateErr := o.Update(&query); updateErr == nil {
 					a.ReturnOrmJson(0, 1, query)
 				} else {
-					a.ReturnJson(0, updateErr.Error())
+					a.ReturnJson(1, updateErr.Error())
 				}
 			}
 		} else {
-			a.ReturnJson(1, "No Such Name Exist")
+			a.ReturnJson(2, "No Such Name Exist")
 		}
 
 	}
@@ -282,10 +280,10 @@ func (a *UserController) DeleteUser() {
 		if count, delErr := o.Delete(&user); delErr == nil {
 			a.ReturnOrmJson(0, count, user)
 		} else {
-			a.ReturnOrmJson(0, 0, delErr.Error())
+			a.ReturnOrmJson(1, 0, delErr.Error())
 		}
 	} else {
-		a.ReturnJson(1, "No Such Name Exist")
+		a.ReturnJson(2, "No Such Name Exist")
 	}
 }
 
@@ -326,7 +324,7 @@ func (a *AuthenticationController) Login() {
 				if s == nil {
 					nowTime := time.Now()
 					sValue := nowTime.Format("20170102150405")
-					a.CruSession.Set(beego.AppConfig.String("login_session"),sValue)
+					a.CruSession.Set(beego.AppConfig.String("login_session"), sValue)
 					a.Ctx.SetCookie(beego.AppConfig.String("login_session"), sValue)
 					a.ReturnJson(0, "Authentication Success")
 				} else {
@@ -396,9 +394,9 @@ func (a *AuthenticationController) CheckLogin() {
 		ses := a.CruSession.Get(beego.AppConfig.String("login_session"))
 		cookie := a.Ctx.GetCookie(beego.AppConfig.String("login_session"))
 		if ses != nil {
-			if ses == cookie{
+			if ses == cookie {
 				a.ReturnJson(0, "Authentication Expired")
-			}else{
+			} else {
 				a.ReturnJson(0, "Authentication Error")
 			}
 
