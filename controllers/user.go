@@ -11,129 +11,129 @@ import (
 	"time"
 )
 
-type AuthorityController struct {
+type RoleContoller struct {
 	utils.BaseController
 }
 
-// @Title Get Authority List
-// @Description Get Authority
-// @Success 200 {object} []models.Authority
+// @Title Get Role List
+// @Description Get Role
+// @Success 200 {object} []models.Role
 // @Failure 404 Not Found
 // @router / [get]
-func (a *AuthorityController) GetAuthorityList() {
+func (a *RoleContoller) GetRoleList() {
 	o := orm.NewOrm()
 	o.Using("default")
 
-	var authority models.Authority
-	var authorities []models.Authority
-	o.QueryTable(authority).All(&authorities)
+	var role models.Role
+	var authorities []models.Role
+	o.QueryTable(role).All(&authorities)
 
 	a.ReturnTableJson(len(authorities), len(authorities), authorities)
 }
 
-// @Title Get Authority
-// @Description Get Authority
-// @Success 200 {object} models.Authority
-// @Param   name path  string  true  "authority name"
+// @Title Get Role
+// @Description Get Role
+// @Success 200 {object} models.Role
+// @Param   name path  string  true  "role name"
 // @Failure 404 body is empty
 // @router /:name [get]
-func (a *AuthorityController) GetAuthority() {
+func (a *RoleContoller) GetRole() {
 	o := orm.NewOrm()
 	o.Using("default")
 
 	name := a.GetString(":name")
 
-	authority := models.Authority{Name: name}
+	role := models.Role{Name: name}
 
-	if o.Read(&authority, "Name") == orm.ErrNoRows {
+	if o.Read(&role, "Name") == orm.ErrNoRows {
 		a.ReturnJson(1, "none")
 	} else {
-		a.ReturnOrmJson(0, 1, authority)
+		a.ReturnOrmJson(0, 1, role)
 	}
 
 }
 
-// @Title Add Authority
-// @Description Add Authority,if full and rw are false, then authority is readonly
-// @Param   post_body body  string  true "{"name":'your name ',"full": false, "rw":false}"
-// @Success 200 {object} models.Authority
+// @Title Add Role
+// @Description Add Role,if full and rw are false, then role is readonly
+// @Param   post_body body  string  true "{"name":'your name ',"super": false, "rw":false}"
+// @Success 200 {object} models.Role
 // @Failure 404 body is empty
 // @router / [post]
-func (a *AuthorityController) AddAuthority() {
+func (a *RoleContoller) AddRole() {
 	o := orm.NewOrm()
 	o.Using("default")
-	authority := new(models.Authority)
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &authority)
+	role := new(models.Role)
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &role)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
-		if o.Read(authority, "Name") == orm.ErrNoRows {
+		if o.Read(role, "Name") == orm.ErrNoRows {
 
-			if _, insertErr := o.Insert(authority); insertErr == nil {
-				a.ReturnOrmJson(0, 1, authority)
+			if _, insertErr := o.Insert(role); insertErr == nil {
+				a.ReturnOrmJson(0, 1, role)
 			} else {
-				a.ReturnJson(0, insertErr.Error())
+				a.ReturnJson(1, insertErr.Error())
 			}
 		} else {
-			a.ReturnJson(1, "This Name Already Exist")
+			a.ReturnJson(2, "This Name Already Exist")
 		}
 
 	}
 }
 
-// @Title Update Authority
-// @Description Update Authority,if full and rw are false, then authority is readonly
+// @Title Update Role
+// @Description Update Role,if full and rw are false, then role is readonly
 // @Param   patch_body body  string  true  "{"name":'your name ',"full": false, "rw":false}"
-// @Success 200 {object} models.Authority
+// @Success 200 {object} models.Role
 // @Failure 404 body is empty
 // @router / [patch]
-func (a *AuthorityController) UpdateAuthority() {
+func (a *RoleContoller) UpdateRole() {
 	o := orm.NewOrm()
 	o.Using("default")
-	authority := new(models.Authority)
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &authority)
-	beego.Info(authority)
+	role := new(models.Role)
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &role)
+	beego.Info(role)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
-		query := models.Authority{Name: authority.Name}
+		query := models.Role{Name: role.Name}
 		if o.Read(&query, "Name") != orm.ErrNoRows {
-			query.Rw = authority.Rw
-			query.Full = authority.Full
+			query.Rw = role.Rw
+			query.Super = role.Super
 			if _, updateErr := o.Update(&query); updateErr == nil {
 				a.ReturnOrmJson(0, 1, query)
 			} else {
-				a.ReturnJson(0, updateErr.Error())
+				a.ReturnJson(1, updateErr.Error())
 			}
 		} else {
-			a.ReturnJson(1, "No Such Name Exist")
+			a.ReturnJson(2, "No Such Name Exist")
 		}
 
 	}
 }
 
-// @Title Delete Authority
-// @Description Delete Authority
-// @Param   name path  string  true  "authority name"
-// @Success 200 {object} models.Authority
+// @Title Delete Role
+// @Description Delete Role
+// @Param   name path  string  true  "role name"
+// @Success 200 {object} models.Role
 // @Failure 404 body is empty
 // @router /:name [delete]
-func (a *AuthorityController) DeleteAuthority() {
+func (a *RoleContoller) DeleteRole() {
 	o := orm.NewOrm()
 	o.Using("default")
 
 	name := a.GetString(":name")
 
-	authority := models.Authority{Name: name}
+	role := models.Role{Name: name}
 
-	if o.Read(&authority, "Name") != orm.ErrNoRows {
-		if count, delErr := o.Delete(&authority); delErr == nil {
-			a.ReturnOrmJson(0, count, authority)
+	if o.Read(&role, "Name") != orm.ErrNoRows {
+		if count, delErr := o.Delete(&role); delErr == nil {
+			a.ReturnOrmJson(0, count, role)
 		} else {
-			a.ReturnOrmJson(0, 0, delErr.Error())
+			a.ReturnOrmJson(1, 0, delErr.Error())
 		}
 	} else {
-		a.ReturnJson(1, "No Such Name Exist")
+		a.ReturnJson(2, "No Such Name Exist")
 	}
 }
 
@@ -179,8 +179,8 @@ func (a *UserController) GetUser() {
 }
 
 // @Title Add User
-// @Description Add User,name password authority_id is required
-// @Param   post_body body  string  true "{"name":'your name ',"password": 'password', "authority_id":'id',"tel":'12345678901', "email":'xx@ff.com'}"
+// @Description Add User,name password role_id is required
+// @Param   post_body body  string  true "{"name":'your name ',"password": 'password', "role_id":'id',"tel":'12345678901', "email":'xx@ff.com'}"
 // @Success 200 {object} models.User
 // @Failure 404 body is empty
 // @router / [post]
@@ -195,14 +195,14 @@ func (a *UserController) AddUser() {
 		a.ReturnJson(200, err.Error())
 	} else {
 		if o.Read(user, "Name") == orm.ErrNoRows {
-			if user.Authority == nil {
-				a.ReturnJson(-1, "No Authority")
+			if user.Role == nil {
+				a.ReturnJson(-1, "No Role")
 			} else {
-				authority := new(models.Authority)
-				authority = user.Authority
+				role := new(models.Role)
+				role = user.Role
 
-				if o.Read(authority) == orm.ErrNoRows {
-					a.ReturnJson(-1, "No such authority")
+				if o.Read(role) == orm.ErrNoRows {
+					a.ReturnJson(-1, "No such role")
 				} else {
 
 					if _, insertErr := o.Insert(user); insertErr == nil {
@@ -221,8 +221,8 @@ func (a *UserController) AddUser() {
 }
 
 // @Title Update User
-// @Description Update User,User,name password authority_id is required
-// @Param   patch_body body  string  true  "{"name":'your name ',"password": 'password', "authority_id":id,"tel":12345678901, "email":'xx@ff.com'}"
+// @Description Update User,User,name password role_id is required
+// @Param   patch_body body  string  true  "{"name":'your name ',"password": 'password', "role_id":id,"tel":12345678901, "email":'xx@ff.com'}"
 // @Success 200 {object} models.User
 // @Failure 404 body is empty
 // @router / [patch]
@@ -242,13 +242,13 @@ func (a *UserController) UpdateUser() {
 			query.Email = user.Email
 			query.Tel = user.Tel
 
-			authority := new(models.Authority)
-			authority = user.Authority
+			role := new(models.Role)
+			role = user.Role
 
-			if o.Read(authority) == orm.ErrNoRows {
-				a.ReturnJson(-1, "No such authority")
+			if o.Read(role) == orm.ErrNoRows {
+				a.ReturnJson(-1, "No such role")
 			} else {
-				query.Authority = authority
+				query.Role = role
 				if _, updateErr := o.Update(&query); updateErr == nil {
 					a.ReturnOrmJson(0, 1, query)
 				} else {

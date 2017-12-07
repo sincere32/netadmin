@@ -15,9 +15,9 @@ func init() {
 	//beego.Include(&controllers.AuthorityController{})
 
 	ns := beego.NewNamespace("/v1.0.0",
-		beego.NSNamespace("/authority",
+		beego.NSNamespace("/role",
 			beego.NSInclude(
-				&controllers.AuthorityController{},
+				&controllers.RoleContoller{},
 			)),
 		beego.NSNamespace("/user",
 			beego.NSInclude(
