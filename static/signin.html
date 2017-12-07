@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>登录</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="renderer" content="webkit">
+
+        <link rel="shortcut icon" href="assets/img/favicon.ico" />
+        <!-- Loading Bootstrap -->
+        <link href="assets/css/backend.min.css" rel="stylesheet">
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+        <!--[if lt IE 9]>
+          <script src="assets/js/html5shiv.js"></script>
+          <!--<script src="assets/js/respond.min.js"></script>-->
+        <![endif]-->
+        <script src="assets/js/jquery-3.2.1.min.js"></script>
+        <script src="assets/js/md5.js"></script>
+        <style type="text/css">
+            body {
+                color:#999;
+                background:url('http://img.tuku.cn/file_thumb/201504/m2015040414392610.jpg');
+                background-size:cover;
+            }
+            a {
+                color:#fff;
+            }
+            .login-panel{margin-top:150px;}
+            .login-screen {
+                max-width:400px;
+                padding:0;
+                margin:100px auto 0 auto;
+
+            }
+            .login-screen .well {
+                border-radius: 3px;
+                -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                background: rgba(255,255,255, 0.2);
+            }
+            .login-screen .copyright {
+                text-align: center;
+            }
+            @media(max-width:767px) {
+                .login-screen {
+                    padding:0 20px;
+                }
+            }
+            .profile-img-card {
+                width: 100px;
+                height: 100px;
+                margin: 10px auto;
+                display: block;
+                -moz-border-radius: 50%;
+                -webkit-border-radius: 50%;
+                border-radius: 50%;
+            }
+            .profile-name-card {
+                text-align: center;
+            }
+
+            #login-form {
+                margin-top:20px;
+            }
+            #login-form .input-group {
+                margin-bottom:15px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="login-wrapper">
+                <div class="login-screen">
+                    <div class="well">
+                        <div class="login-form">
+                            <img id="profile-img" class="profile-img-card" src="assets/img/avatar.png" />
+                            <p id="profile-name" class="profile-name-card"></p>
+
+                            <form class="form" role="form" id="login-form">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></div>
+                                    <input type="text" class="form-control" id="user_name" placeholder="Your Name" name="username" autocomplete="off" value="" />
+                                </div>
+
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></div>
+                                    <input type="password" class="form-control" id="password" placeholder="Your Password" name="password" autocomplete="off" value=""/>
+                                </div>
+                            </form>
+                            <button type="button" class="btn btn-success btn-lg btn-block" onclick="signin()">Sign In</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="application/javascript">
+            function signin() {
+                var user_name = $("#user_name").val();
+                var password = $("#password").val();
+                if (user_name != "" && password != ""){
+                    var post_json = JSON.stringify({
+                        "name": user_name,
+                        "password":  $.md5(password)
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: "/v1.0.0/authentication",
+                        data: post_json,
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status == 0 || data.status == 1) {
+                                window.location.href = "/";
+                            }else {
+                                alert(data.msg);
+                            }
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                }else{
+                    alert("Name or Password is Null");
+                }
+            }
+        </script>
+    </body>
+</html>

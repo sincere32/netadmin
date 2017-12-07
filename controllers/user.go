@@ -291,13 +291,13 @@ type AuthenticationController struct {
 	utils.BaseController
 }
 
-// @Title Login
-// @Description Login
+// @Title SignIn
+// @Description SignIn
 // @Param   post_body body  string  true "{"name":'your name ',"password": 'password'}"
 // @Success 200  {"status": "-1 error 0 succeed 1 failed", msg:""}
 // @Failure 404 body is empty
 // @router / [post]
-func (a *AuthenticationController) Login() {
+func (a *AuthenticationController) SignIn() {
 	o := orm.NewOrm()
 	o.Using("default")
 
@@ -313,10 +313,10 @@ func (a *AuthenticationController) Login() {
 		qs.Filter("name", user.Name).All(&query)
 
 		if len(query) == 0 {
-			a.ReturnJson(1, "No such User")
+			a.ReturnJson(2, "No such User")
 		} else {
 			if query[0].Password != user.Password {
-				a.ReturnJson(1, "Password is Wrong")
+				a.ReturnJson(3, "Password is Wrong")
 			} else {
 				sess := a.StartSession()
 				defer sess.SessionRelease(a.Ctx.ResponseWriter)
@@ -326,6 +326,7 @@ func (a *AuthenticationController) Login() {
 					sValue := nowTime.Format("20170102150405")
 					a.CruSession.Set(beego.AppConfig.String("login_session"), sValue)
 					a.Ctx.SetCookie(beego.AppConfig.String("login_session"), sValue)
+					a.Ctx.SetCookie("nickname", query[0].Name)
 					a.ReturnJson(0, "Authentication Success")
 				} else {
 					a.ReturnJson(1, "Expired")
@@ -339,13 +340,13 @@ func (a *AuthenticationController) Login() {
 	}
 }
 
-// @Title Logout
-// @Description Logout
+// @Title SignOut
+// @Description SignOut
 // @Param   name path  string  true "me"
 // @Success 200 {"status":" 0 success 1 error", "msg":""}
 // @Failure 404 body is empty
 // @router /:name [delete]
-func (a *AuthenticationController) Logout() {
+func (a *AuthenticationController) SignOut() {
 	o := orm.NewOrm()
 	o.Using("default")
 
@@ -357,7 +358,7 @@ func (a *AuthenticationController) Logout() {
 	o.QueryTable(user).Filter("name", name).RelatedSel().All(&query)
 
 	if len(query) == 0 {
-		a.ReturnJson(1, "No such User")
+		a.ReturnJson(2, "No such User")
 	} else {
 		sess := a.StartSession()
 		defer sess.SessionRelease(a.Ctx.ResponseWriter)
@@ -365,9 +366,9 @@ func (a *AuthenticationController) Logout() {
 		if ses != nil {
 			a.DestroySession()
 			a.CruSession.Flush()
-			a.ReturnJson(1, "Authentication Delete")
+			a.ReturnJson(0, "Authentication Delete")
 		} else {
-			a.ReturnJson(0, "No Authentication Expired")
+			a.ReturnJson(1, "No Authentication Expired")
 		}
 	}
 
@@ -397,7 +398,7 @@ func (a *AuthenticationController) CheckLogin() {
 			if ses == cookie {
 				a.ReturnJson(0, "Authentication Expired")
 			} else {
-				a.ReturnJson(0, "Authentication Error")
+				a.ReturnJson(-1, "Authentication Error")
 			}
 
 		} else {

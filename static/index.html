@@ -15,7 +15,6 @@
     <script src="assets/js/html5shiv.js"></script>
     <script src="assets/js/respond.min.js"></script>
     <![endif]-->
-
     <script type="text/javascript">
         var require = {
             "config": {
@@ -119,27 +118,13 @@
                                     <small>2017-07-18 18:16:04</small>
                                 </p>
                             </li>
-                            <!--&lt;!&ndash; Menu Body &ndash;&gt;-->
-                            <!--<li class="user-body">-->
-                            <!--<div class="row">-->
-                            <!--<div class="col-xs-4 text-center">-->
-                            <!--<a href="http://www.fastadmin.net" target="_blank">官网</a>-->
-                            <!--</div>-->
-                            <!--<div class="col-xs-4 text-center">-->
-                            <!--<a href="http://forum.fastadmin.net" target="_blank">论坛</a>-->
-                            <!--</div>-->
-                            <!--<div class="col-xs-4 text-center">-->
-                            <!--<a href="http://doc.fastadmin.net" target="_blank">文档</a>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!--</li>-->
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
                                     <a href="profile.html" class="btn btn-default btn-flat addtabsit">Profile</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="login.html" class="btn btn-default btn-flat">Logout</a>
+                                    <button id="signout" class="btn btn-default btn-flat">Sign out</button>
                                 </div>
                             </li>
                         </ul>
@@ -248,7 +233,7 @@
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper tab-content tab-addtabs">
+    <div class="content-wrapper tab-content tab-addtabs" id="childConent">
 
     </div>
     <!-- /.content-wrapper -->
@@ -613,6 +598,8 @@
 </div>
 <!-- ./wrapper -->
 <!-- end main content -->
-<script src="assets/js/require.js" data-main="assets/js/require-backend.min.js"></script>
+<script src="assets/js/require.js" data-main="assets/js/require-backend.js"></script>
+
+
 </body>
 </html>

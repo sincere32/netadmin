@@ -20,7 +20,8 @@
     <script src="assets/js/bootstrap-3.3.7.min.js"></script>
     <script src="assets/js/jquery.dataTables.min.js"></script>
     <script src="assets/js/dataTables.bootstrap.min.js"></script>
-
+    <script src="assets/js/md5.js"></script>
+    <script src="assets/js/check-user.js"></script>
     <style type="text/css">
         @media screen and (-webkit-min-user-pixel-ratio: 0) {
             .form-control.input-sm {
@@ -103,7 +104,7 @@
                                                             <thead>
                                                             <tr>
                                                                 <th>Name</th>
-                                                                <th>Authority</th>
+                                                                <th>Role</th>
                                                                 <th>Email</th>
                                                                 <th>Tel</th>
                                                             </tr>
@@ -132,9 +133,9 @@
                                                                                    placeholder="User Name">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>User Authority</label>
+                                                                            <label>User Role</label>
                                                                             <select class="form-control"
-                                                                                   id="add_user_authority"
+                                                                                   id="add_user_role"
                                                                             ></select>
                                                                         </div>
                                                                         <div class="form-group">
@@ -192,9 +193,9 @@
                                                                                    placeholder="User Name">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>User Authority</label>
+                                                                            <label>User Role</label>
                                                                             <select class="form-control"
-                                                                                    id="update_user_authority"
+                                                                                    id="update_user_role"
                                                                             ></select>
                                                                         </div>
                                                                         <div class="form-group">
@@ -250,6 +251,7 @@
 </div>
 </div>
 <script type="text/javascript">
+    var update_user_password = "";
     $(document).ready(function () {
         format_user("/v1.0.0/user/");
         $("#user_search").on("keyup click", function () {
@@ -259,12 +261,12 @@
         });
     });
 
-    // set authority select
-    function init_authority(authority_select, data) {
-        authority_select.empty();
-        authority_select.append("<option selected='selected'  value=-1>Select Authority</option>");
+    // set role select
+    function init_role(role_select, data) {
+        role_select.empty();
+        role_select.append("<option selected='selected'  value=-1>Select Role</option>");
         for (var i=0;i<data.length;i++){
-            authority_select.append("<option value=" + data[i]['id'] + ">" + data[i]['name'] + "</option>");
+            role_select.append("<option value=" + data[i]['id'] + ">" + data[i]['name'] + "</option>");
         }
     }
     // Init Add User Modal
@@ -273,7 +275,7 @@
             type: "GET",
             url: "/v1.0.0/role",
             success: function (data) {
-                init_authority($("#add_user_authority"), data.data)
+                init_role($("#add_user_role"), data.data)
             }
         });
     });
@@ -290,17 +292,17 @@
         var user_password = $("#add_user_password").val();
         var user_email = $("#add_user_email").val();
         var user_tel = $("#add_user_tel").val();
-        var user_authority = $("#add_user_authority option:selected").val();
+        var user_role = $("#add_user_role option:selected").val();
 
 
-        if (user_name != "" && user_password != "" && user_authority != -1) {
+        if (user_name != "" && user_password != "" && user_role != -1) {
             var post_json = JSON.stringify({
                 "name": user_name,
-                "password": user_password,
+                "password":  $.md5(user_password),
                 "email":user_email,
                 "tel":user_tel,
-                "authority_id":{
-                    "id":parseInt(user_authority)
+                "role_id":{
+                    "id":parseInt(user_role)
                 }
             });
             $.ajax({
@@ -319,7 +321,7 @@
                 }
             });
         } else {
-            alert("user name or password or authority is null")
+            alert("user name or password or role is null")
         }
     }
 
@@ -329,17 +331,23 @@
         var user_password = $("#update_user_password").val();
         var user_email = $("#update_user_email").val();
         var user_tel = $("#update_user_tel").val();
-        var user_authority = $("#update_user_authority option:selected").val();
+        var user_role = $("#update_user_role option:selected").val();
 
         if (user_name != "" && user_password != "") {
+
+            if (user_password != update_user_password){
+                user_password = $.md5(user_password)
+            }else{
+                user_password = update_user_password;
+            }
 
             var post_json = JSON.stringify({
                 "name": user_name,
                 "password": user_password,
                 "email":user_email,
                 "tel":user_tel,
-                "authority_id":{
-                    "id":parseInt(user_authority)
+                "role_id":{
+                    "id":parseInt(user_role)
                 }
             });
             $.ajax({
@@ -406,7 +414,7 @@
             },
             columns: [
                 {"data": "name"},
-                {"data": "authority_id.name"},
+                {"data": "role_id.name"},
                 {"data": "email"},
                 {"data": "tel"}
             ]
@@ -421,44 +429,43 @@
                 $(this).addClass("selected");
 
                 var user_name = "";
-                var user_password = "";
                 var user_email = "";
                 var user_tel = "";
-                var user_authority_id = "";
-                var user_authority_name = "";
+                var user_role_id = "";
+                var user_role_name = "";
                 var nTrs = table.dataTable().fnGetNodes();
                 for (var i = 0; i < nTrs.length; i++) {
                     if ($(nTrs[i]).hasClass("selected")) {
                         var t = table.dataTable().fnGetData(nTrs[i]);
                         user_name = t["name"];
-                        user_password = t["password"];
+                        update_user_password = t["password"];
                         user_email = t["email"];
                         user_tel = t["tel"];
-                        user_authority_id = t["authority_id"]["id"];
-                        user_authority_name = t['authority_id']["name"];
+                        user_role_id = t["role_id"]["id"];
+                        user_role_name = t['role_id']["name"];
                         break;
                     }
                 }
 
                 $("#update_user_name").val(user_name);
-                $("#update_user_password").val(user_password);
+                $("#update_user_password").val(update_user_password);
                 $("#update_user_email").val(user_email);
                 $("#update_user_tel").val(user_tel);
 
 
-                var authority_select = $("#update_user_authority");
+                var role_select = $("#update_user_role");
 
                 $.ajax({
                     type: "GET",
                     url: "/v1.0.0/role",
                     success: function (data) {
-                        authority_select.empty();
+                        role_select.empty();
                         for (var i=0;i<data.data.length;i++){
-                            console.log(data.data[i]['id'], user_authority_id, user_authority_name);
-                            if (data.data[i]['id'] == user_authority_id){
-                                authority_select.append("<option selected='selected' value="+user_authority_id+">"+user_authority_name +"</option>");
+                            console.log(data.data[i]['id'], user_role_id, user_role_name);
+                            if (data.data[i]['id'] == user_role_id){
+                                role_select.append("<option selected='selected' value="+user_role_id+">"+user_role_name +"</option>");
                             }else{
-                                authority_select.append("<option value=" + data.data[i]['id'] + ">" + data.data[i]['name'] + "</option>");
+                                role_select.append("<option value=" + data.data[i]['id'] + ">" + data.data[i]['name'] + "</option>");
                             }
 
                         }

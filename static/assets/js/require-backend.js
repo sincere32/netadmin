@@ -20,6 +20,7 @@ require.config({
         'adminlte': 'adminlte',
         'bootstrap-table-commonsearch': 'bootstrap-table-commonsearch',
         'bootstrap-table-template': 'bootstrap-table-template',
+
         //
         // 以下的包从bower的libs目录加载
         'jquery': '../libs/jquery/dist/jquery.min',
@@ -47,11 +48,12 @@ require.config({
         'cookie': '../libs/jquery.cookie/jquery.cookie',
         'cxselect': '../libs/jquery-cxselect/js/jquery.cxselect',
         'template': '../libs/art-template/dist/template-native',
-        'selectpage': '../libs/selectpage/selectpage',
+        'selectpage': '../libs/selectpage/selectpage'
     },
     // shim依赖配置
     shim: {
         'bootstrap': ['jquery'],
+
         'bootstrap-table': {
             deps: [
                 'bootstrap',
@@ -112,6 +114,11 @@ require.config({
 //        'validator-core': ['css!../libs/nice-validator/dist/jquery.validator.css'],
         'validator-lang': ['validator-core'],
 //        'selectpage': ['css!../libs/selectpage/selectpage.css'],
+        'cookie':{
+            deps:['jquery'],
+            exports: '$.cookie'
+        }
+
     },
     baseUrl: requirejs.s.contexts._.config.config.site.cdnurl + '/assets/js/', //资源基础路径
     map: {
@@ -153,4 +160,51 @@ require(['jquery', 'bootstrap'], function ($, undefined) {
             });
         });
     });
+});
+//check online status
+require(['jquery','cookie'], function ($) {
+    $(function () {
+        check_online();
+        signout();
+        setInterval(check_online,10000);
+
+    });
+
+    function check_online() {
+        console.info($.cookie("nickname"));
+        $.ajax({
+            type: "GET",
+            url: "/v1.0.0/authentication/"+$.cookie("nickname"),
+            success: function (data) {
+                if (data.status != 0) {
+                    window.location.href = "signin.html";
+                }
+            }
+        });
+    }
+
+    function signout() {
+
+        $("#signout").click(function(){
+            if (document.cookie.indexOf("nickname") == -1){
+                window.location.href = 'signin.html';
+            }else{
+                var nickname = $.cookie("nickname");
+                $.ajax({
+                    type: "Delete",
+                    url: "/v1.0.0/authentication/"+nickname,
+                    success: function (data) {
+                        if (data.status == 0 || data.status == 1) {
+                            window.location.href = "signin.html";
+                        }else {
+                            alert(data.msg);
+                        }
+                    }
+                });
+            }
+        });
+
+
+    }
+
 });
