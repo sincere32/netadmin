@@ -64,6 +64,7 @@ func (a *RoleContoller) AddRole() {
 	o.Using("default")
 	role := new(models.Role)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &role)
+	beego.Info(role)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {

@@ -6,13 +6,16 @@ package routers
 
 import (
 	"gitee.com/pippozq/netadmin/controllers"
+	"gitee.com/pippozq/netadmin/filters"
 	"github.com/astaxie/beego"
 )
 
 func init() {
-	//beego.Router("/", &controllers.MainController{})
-	//
-	//beego.Include(&controllers.AuthorityController{})
+
+	beego.InsertFilter("/*", beego.BeforeExec, filters.LoginFilter)
+	beego.InsertFilter("/*", beego.BeforeExec, filters.RoleFilter)
+	beego.InsertFilter("/*./user", beego.BeforeExec, filters.UserFilter)
+	beego.InsertFilter("/*./user/:name", beego.BeforeExec, filters.UserFilter)
 
 	ns := beego.NewNamespace("/v1.0.0",
 		beego.NSNamespace("/role",

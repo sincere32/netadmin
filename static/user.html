@@ -301,7 +301,7 @@
                 "password":  $.md5(user_password),
                 "email":user_email,
                 "tel":user_tel,
-                "role_id":{
+                "role":{
                     "id":parseInt(user_role)
                 }
             });
@@ -346,7 +346,7 @@
                 "password": user_password,
                 "email":user_email,
                 "tel":user_tel,
-                "role_id":{
+                "role":{
                     "id":parseInt(user_role)
                 }
             });
@@ -410,11 +410,17 @@
             dataType: 'json',
             contentType: "application/json;charset=utf-8",
             ajax: {
-                url: url
+                url: url,
+                success:function (data) {
+                    if (data.status == 1){
+                        alert(data.msg);
+                    }
+
+                }
             },
             columns: [
                 {"data": "name"},
-                {"data": "role_id.name"},
+                {"data": "role.name"},
                 {"data": "email"},
                 {"data": "tel"}
             ]
@@ -441,8 +447,8 @@
                         update_user_password = t["password"];
                         user_email = t["email"];
                         user_tel = t["tel"];
-                        user_role_id = t["role_id"]["id"];
-                        user_role_name = t['role_id']["name"];
+                        user_role_id = t["role"]["id"];
+                        user_role_name = t['role']["name"];
                         break;
                     }
                 }

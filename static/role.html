@@ -246,9 +246,11 @@
 
         var role_name = $("#add_role_name").val();
         var role_role = $("#add_role_role option:selected").val();
-
+        console.info(role_name, role_role);
         if (role_name != "" && role_role != -1) {
-            var post_json = JSON.stringify({});
+            var post_json = JSON.stringify({
+                "name": role_name
+            });
             if (role_role == "super"){
                 post_json = JSON.stringify({
                     "name": role_name,
@@ -288,7 +290,9 @@
 
         if (role_name != "") {
 
-            var post_json = JSON.stringify({});
+            var post_json = JSON.stringify({
+                "name": role_name
+            });
             if (role_role == "super"){
                 post_json = JSON.stringify({
                     "name": role_name,
@@ -300,6 +304,7 @@
                     "rw":true
                 });
             }
+            console.info(post_json);
             $.ajax({
                 type: "PATCH",
                 url: "/v1.0.0/role",

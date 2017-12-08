@@ -14,7 +14,7 @@ type User struct {
 	Password string `orm:"size(255)"json:"password"`
 	Email    string `orm:"size(50);null"json:"email"`
 	Tel      string `orm:"size(11);null"json:"tel"`
-	Role     *Role  `orm:"rel(fk);"json:"role_id"`
+	Role     *Role  `orm:"rel(fk);"json:"role"`
 }
 
 type Role struct {
