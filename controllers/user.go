@@ -28,7 +28,7 @@ func (a *RoleContoller) GetRoleList() {
 	var authorities []models.Role
 	o.QueryTable(role).All(&authorities)
 
-	a.ReturnTableJson(len(authorities), len(authorities), authorities)
+	a.ReturnTableJson(0,len(authorities), len(authorities), authorities)
 }
 
 // @Title Get Role
@@ -156,7 +156,7 @@ func (a *UserController) GetUserList() {
 	var users []models.User
 	o.QueryTable(user).RelatedSel().All(&users)
 
-	a.ReturnTableJson(len(users), len(users), users)
+	a.ReturnTableJson(0,len(users), len(users), users)
 }
 
 // @Title Get User
@@ -191,7 +191,6 @@ func (a *UserController) AddUser() {
 
 	user := new(models.User)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
-	beego.Info(user)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
@@ -304,15 +303,13 @@ func (a *AuthenticationController) SignIn() {
 
 	user := new(models.User)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
+	beego.Info(user)
 	if err == nil {
 		var query []models.User
-
-		qs := o.QueryTable(user)
-
+		beego.Info(user.Name)
+		o.QueryTable(user).Filter("name", user.Name).All(&query)
+		beego.Info(query)
 		// Check User Exist
-
-		qs.Filter("name", user.Name).All(&query)
-
 		if len(query) == 0 {
 			a.ReturnJson(2, "No such User")
 		} else {

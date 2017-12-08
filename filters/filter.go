@@ -21,7 +21,6 @@ func LoginFilter(ctx *context.Context) {
 	o.Using("default")
 	url := strings.Split(ctx.Request.RequestURI, "/")
 	if url[2] != "authentication" && ctx.Request.Method != "POST" {
-		beego.Info("33333")
 		name := ctx.GetCookie("nickname")
 
 		user := models.User{Name: name}
@@ -58,7 +57,6 @@ func RoleFilter(ctx *context.Context) {
 
 			super := query[0].Role.Super
 			rw := query[0].Role.Rw
-			beego.Info(super, rw, query[0])
 
 			if !super && !rw {
 				ReturnJson(ctx, 1, "Authority is ReadOnly")
@@ -70,8 +68,6 @@ func RoleFilter(ctx *context.Context) {
 }
 
 func UserFilter(ctx *context.Context) {
-	beego.Info("User")
-
 	o := orm.NewOrm()
 	o.Using("default")
 

@@ -178,6 +178,9 @@ require(['jquery','cookie'], function ($) {
             success: function (data) {
                 if (data.status != 0) {
                     window.location.href = "signin.html";
+                }else{
+                    $(" p").text($.cookie("nickname"));
+                    $("#user_name").text($.cookie("nickname"));
                 }
             }
         });
@@ -199,6 +202,9 @@ require(['jquery','cookie'], function ($) {
                         }else {
                             alert(data.msg);
                         }
+                    },
+                    error: function (status) {
+                        alert(status);
                     }
                 });
             }

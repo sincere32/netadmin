@@ -21,7 +21,7 @@
         <style type="text/css">
             body {
                 color:#999;
-                background:url('http://img.tuku.cn/file_thumb/201504/m2015040414392610.jpg');
+                background:url('assets/img/signin.jpg');
                 background-size:cover;
             }
             a {
@@ -76,7 +76,7 @@
                 <div class="login-screen">
                     <div class="well">
                         <div class="login-form">
-                            <img id="profile-img" class="profile-img-card" src="assets/img/avatar.png" />
+                            <img id="profile-img" class="profile-img-card" src="assets/img/avatar.jpg" />
                             <p id="profile-name" class="profile-name-card"></p>
 
                             <form class="form" role="form" id="login-form">
@@ -119,8 +119,8 @@
                                 alert(data.msg);
                             }
                         },
-                        error: function (error) {
-                            alert(error);
+                        error: function (data) {
+                            alert(data.status);
                         }
                     });
                 }else{

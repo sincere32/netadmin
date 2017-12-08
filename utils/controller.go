@@ -5,6 +5,7 @@ import (
 )
 
 type ReturnTable struct {
+	Status int `json:"status"`
 	RecordsTotal    int         `json:"recordsTotal"`
 	RecordsFiltered int         `json:"recordsFiltered"`
 	TableData       interface{} `json:"data"`
@@ -20,9 +21,10 @@ type FormatJsonInterface interface {
 
 // Format Return Body
 
-func (base *BaseController) ReturnTableJson(total, records int, data interface{}) {
+func (base *BaseController) ReturnTableJson(status, total, records int, data interface{}) {
 
 	base.Data["json"] = ReturnTable{
+		Status: status,
 		RecordsTotal:    total,
 		RecordsFiltered: records,
 		TableData:       data,

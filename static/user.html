@@ -21,14 +21,12 @@
     <script src="assets/js/jquery.dataTables.min.js"></script>
     <script src="assets/js/dataTables.bootstrap.min.js"></script>
     <script src="assets/js/md5.js"></script>
-    <script src="assets/js/check-user.js"></script>
     <style type="text/css">
-        @media screen and (-webkit-min-user-pixel-ratio: 0) {
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
             .form-control.input-sm {
                 padding: 0px 20px 5px 10px;
             }
         }
-
         .dataTables_filter {
             display: none;
         }
@@ -190,7 +188,7 @@
                                                                             <label>User Name</label>
                                                                             <input type="text" class="form-control"
                                                                                    id="update_user_name"
-                                                                                   placeholder="User Name">
+                                                                                   placeholder="User Name" readonly="readonly">
                                                                         </div>
                                                                         <div class="form-group">
                                                                             <label>User Role</label>
@@ -410,13 +408,7 @@
             dataType: 'json',
             contentType: "application/json;charset=utf-8",
             ajax: {
-                url: url,
-                success:function (data) {
-                    if (data.status == 1){
-                        alert(data.msg);
-                    }
-
-                }
+                url: url
             },
             columns: [
                 {"data": "name"},
