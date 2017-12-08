@@ -5,7 +5,7 @@ import (
 )
 
 type ReturnTable struct {
-	Status int `json:"status"`
+	Status          int         `json:"status"`
 	RecordsTotal    int         `json:"recordsTotal"`
 	RecordsFiltered int         `json:"recordsFiltered"`
 	TableData       interface{} `json:"data"`
@@ -24,11 +24,16 @@ type FormatJsonInterface interface {
 func (base *BaseController) ReturnTableJson(status, total, records int, data interface{}) {
 
 	base.Data["json"] = ReturnTable{
-		Status: status,
+		Status:          status,
 		RecordsTotal:    total,
 		RecordsFiltered: records,
 		TableData:       data,
 	}
+	base.ServeJSON()
+}
+
+func (base *BaseController) ReturnNetDriverJson(msg interface{}) {
+	base.Data["json"] = msg
 	base.ServeJSON()
 }
 

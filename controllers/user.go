@@ -28,7 +28,7 @@ func (a *RoleContoller) GetRoleList() {
 	var authorities []models.Role
 	o.QueryTable(role).All(&authorities)
 
-	a.ReturnTableJson(0,len(authorities), len(authorities), authorities)
+	a.ReturnTableJson(0, len(authorities), len(authorities), authorities)
 }
 
 // @Title Get Role
@@ -156,7 +156,7 @@ func (a *UserController) GetUserList() {
 	var users []models.User
 	o.QueryTable(user).RelatedSel().All(&users)
 
-	a.ReturnTableJson(0,len(users), len(users), users)
+	a.ReturnTableJson(0, len(users), len(users), users)
 }
 
 // @Title Get User

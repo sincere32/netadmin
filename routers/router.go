@@ -30,6 +30,14 @@ func init() {
 			beego.NSInclude(
 				&controllers.AuthenticationController{},
 			)),
+		beego.NSNamespace("/junos",
+			beego.NSInclude(
+				&controllers.JunosController{},
+			)),
+		beego.NSNamespace("/gitlab",
+			beego.NSInclude(
+				&controllers.GitlabController{},
+			)),
 	)
 	beego.AddNamespace(ns)
 

@@ -28,7 +28,6 @@ func LoginFilter(ctx *context.Context) {
 		if o.Read(&user, "Name") != orm.ErrNoRows {
 			ses := ctx.Input.CruSession.Get(beego.AppConfig.String("login_session"))
 			cookie := ctx.GetCookie(beego.AppConfig.String("login_session"))
-			beego.Info(ses, cookie)
 			if ses != nil {
 				if ses != cookie {
 					ReturnJson(ctx, -1, "Authentication Error")
@@ -47,7 +46,7 @@ func RoleFilter(ctx *context.Context) {
 	o := orm.NewOrm()
 	o.Using("default")
 	url := strings.Split(ctx.Request.RequestURI, "/")
-	if url[2] != "authentication"  {
+	if url[2] != "authentication" {
 		if ctx.Request.Method == "POST" || ctx.Request.Method == "PATCH" || ctx.Request.Method == "DELETE" {
 			name := ctx.GetCookie("nickname")
 			var user models.User
