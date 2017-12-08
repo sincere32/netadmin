@@ -175,10 +175,14 @@ require(['jquery','cookie'], function ($) {
         $.ajax({
             type: "GET",
             url: "/v1.0.0/authentication/"+$.cookie("nickname"),
+            timeout: 5000,
             success: function (data) {
                 if (data.status != 0) {
                     window.location.href = "signin.html";
                 }
+            },
+            error: function () {
+                window.location.href = "signin.html";
             }
         });
     }
@@ -193,12 +197,16 @@ require(['jquery','cookie'], function ($) {
                 $.ajax({
                     type: "Delete",
                     url: "/v1.0.0/authentication/"+nickname,
+                    timeout: 5000,
                     success: function (data) {
                         if (data.status == 0 || data.status == 1) {
                             window.location.href = "signin.html";
                         }else {
                             alert(data.msg);
                         }
+                    },
+                    error: function () {
+                        window.location.href = "signin.html";
                     }
                 });
             }
