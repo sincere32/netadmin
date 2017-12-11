@@ -66,8 +66,8 @@ type Gitlab struct {
 
 type GitlabInterface interface {
 	GetReposID(reposName, url, token string) (id int, err error)
-	GetFileBlobID(reposID int, ref, filePath,url, token string) (blobID string, err error)
-	GetFileContent(reposID int, blobId , url, token string) (content string, err error)
+	GetFileBlobID(reposID int, ref, filePath, url, token string) (blobID string, err error)
+	GetFileContent(reposID int, blobId, url, token string) (content string, err error)
 }
 
 func (g *Gitlab) GetReposID(reposName, url, token string) (id int, err error) {
@@ -97,7 +97,7 @@ func (g *Gitlab) GetReposID(reposName, url, token string) (id int, err error) {
 	return id, err
 }
 
-func (g *Gitlab) GetFileContent(reposID int, blobId , url, token string) (content string, err error) {
+func (g *Gitlab) GetFileContent(reposID int, blobId, url, token string) (content string, err error) {
 	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/blobs/%s/raw", url, reposID, blobId))
 	req.Header("Private-Token", token)
 	req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
@@ -118,7 +118,7 @@ func (g *Gitlab) GetFileContent(reposID int, blobId , url, token string) (conten
 	return content, err
 }
 
-func (g *Gitlab) GetFileBlobID(reposID int, ref, filePath,url, token string) (blobID string, err error) {
+func (g *Gitlab) GetFileBlobID(reposID int, ref, filePath, url, token string) (blobID string, err error) {
 	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/tree?recursive=true&ref=%s", url, reposID, ref))
 	req.Header("Private-Token", token)
 	req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")

@@ -18,7 +18,7 @@ type ReturnJson struct {
 
 type Message map[string]interface{}
 
-type Messages [] Message
+type Messages []Message
 
 type BaseController struct {
 	beego.Controller
@@ -82,4 +82,3 @@ func (base *BaseController) Error500() {
 	}
 	base.ServeJSON()
 }
-

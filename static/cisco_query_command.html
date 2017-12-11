@@ -112,7 +112,6 @@
     </div>
 </div>
 </div>
-<script src="assets/js/require.min.js" data-main="assets/js/require-backend.min.js"></script>
 </body>
 <script type="text/javascript">
     function run_cisco_command() {
@@ -160,32 +159,13 @@
         });
     }
 </script>
-
+<script src="assets/js/device.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        get_hosts();
+        //Get Hosts
+        GetHosts($("#host"),"cisco");
     });
 </script>
-<script type="text/javascript">
-    function get_hosts() {
-        $("#host").multiSelect();
-        $("#host").empty().multiSelect('refresh');
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/devices/cisco",
-            async: false,
-            success: function (data) {
-                for (var i = 0; i < data.msg.length; i++) {
-                    console.log(data.msg[i]['ip']);
-                    $("#host").multiSelect('addOption', {value: data.msg[i]['ip'], text: data.msg[i]['ip'], index: i});
-                }
-            },
-            error: function (data) {
-                result.empty();
-                result.append(data.msg);
-            }
-        });
-    }
-</script>
+
 
 </html>

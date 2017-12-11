@@ -331,6 +331,7 @@
 </div>
 </div>
 <script src="assets/js/gitlab.js"></script>
+<script src="assets/js/device.js"></script>
 <script type="text/javascript">
     var update_schedule_id = "";
     var update_device_ip = "";
@@ -388,7 +389,8 @@
 
     $("#device_type").change(function () {
 
-        get_hosts($("#device_type option:selected").text());
+        //Get Hosts
+        GetHosts($("#host"),$("#device_type option:selected").text());
 
         var module_select = $("#add_module");
         module_select.empty();
@@ -690,30 +692,11 @@
         });
     }
 
-    function get_hosts(device_type) {
-        $("#host").multiSelect();
-        $("#host").empty().multiSelect('refresh');
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/devices/" + device_type,
-            async: false,
-            success: function (data) {
-                for (var i = 0; i < data.msg.length; i++) {
-                    console.log(data.msg[i]['ip']);
-                    $("#host").multiSelect('addOption', {value: data.msg[i]['ip'], text: data.msg[i]['ip'], index: i});
-                }
-            },
-            error: function (data) {
-                alert(data);
-            }
-        });
-    }
-
     function get_device_types() {
         var dt = $("#device_type");
         $.ajax({
             type: "GET",
-            url: "/api/v1/device/keys?search_type=device_type",
+            url: "/v1.0.0/device/types",
             success: function (data) {
                 if (data.status == "1") {
                     alert("Get Device Type Failed")

@@ -228,7 +228,7 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        format_device("/api/v1/devices/*?format=table");
+        format_device("/v1.0.0/device");
         $("#device_search").on("keyup click", function () {
             $('#device_table').DataTable().search(
                 $('#device_search').val()
@@ -237,7 +237,7 @@
     });
 
     function refresh() {
-        format_device("/api/v1/devices/*?format=table");
+        format_device("/v1/device");
     }
 
     // add device
@@ -245,34 +245,30 @@
         var host = $("#add_host").val();
         var device_type = $("#add_device_type").val();
         var device_name = $("#add_device_name").val();
-        var hosts = host.split(",");
-        var hosts_array = new Array();
 
-        if (device_name != "" && hosts != "" && device_type != "") {
-            for (var i = 0; i < hosts.length; i++) {
-                var device = JSON.stringify({
-                    "device_name": device_name,
-                    "ip": hosts[i],
-                    "device_type": device_type
-                });
-                hosts_array.push(device);
-            }
+        if (device_name != "" && host != "" && device_type != "") {
             var post_json = JSON.stringify({
-                "devices": hosts_array
+                "device_name": device_name,
+                "ip": host,
+                "device_type": device_type
             });
             $.ajax({
                 type: "POST",
-                url: "/api/v1/devices/" + device_type,
+                url: "/v1.0.0/device",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (data) {
-                    if (data.status == "1") {
-                        alert("Add Failed")
+                    if (data.status != 0) {
+                        alert(data.msg);
                     } else {
-                        format_device("/api/v1/devices/*?format=table");
+                        $("#modal_add_device").modal("hide");
+                        format_device("/v1.0.0/device");
                     }
-                    $("#modal_add_device").modal("hide");
+                },
+                error: function (data) {
+                    console.info(data);
+                    alert(data.status);
                 }
             });
         } else {
@@ -285,33 +281,29 @@
         var host = $("#update_host").val();
         var device_type = $("#update_device_type").val();
         var device_name = $("#update_device_name").val();
-        var hosts = host.split(",");
-        var hosts_array = new Array();
-        if (device_name != "" && hosts != "" && device_type != "") {
-            for (var i = 0; i < hosts.length; i++) {
-                var device = JSON.stringify({
-                    "device_name": device_name,
-                    "ip": hosts[i],
-                    "device_type": device_type
-                });
-                hosts_array.push(device);
-            }
+        if (device_name != "" && host != "" && device_type != "") {
             var post_json = JSON.stringify({
-                "devices": hosts_array
+                "device_name": device_name,
+                "ip": host,
+                "device_type": device_type
             });
             $.ajax({
                 type: "PATCH",
-                url: "/api/v1/devices/" + device_type,
+                url: "/v1.0.0/device",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (data) {
-                    if (data.status == "1") {
-                        alert("Update Failed")
+                    if (data.status != 0) {
+                        alert(data.msg);
                     } else {
-                        format_device("/api/v1/devices/*?format=table");
+                        $("#modal_update_device").modal("hide");
+                        format_device("/v1.0.0/device");
                     }
-                    $("#modal_update_device").modal("hide");
+                },
+                error: function (data) {
+                    console.info(data);
+                    alert(data.status);
                 }
             });
         } else {
@@ -321,19 +313,22 @@
 
     // Delete Device
     function delete_device() {
-        var host = $("#update_host").val();
-        var device_type = $("#update_device_type").val();
+        var device_name = $("#update_device_name").val();
         $.ajax({
             type: "DELETE",
-            url: "/api/v1/devices/" + device_type + "?key=" + host,
+            url: "/v1.0.0/device/" + device_name ,
             async: false,
             success: function (data) {
-                if (data.status == "1") {
-                    alert("No Such Key")
+                if (data.status != 0) {
+                    alert(data.msg)
                 } else {
-                    format_device("/api/v1/devices/*?format=table");
+                    $("#modal_update_device").modal("hide");
+                    format_device("/v1.0.0/device");
                 }
-                $("#modal_update_device").modal("hide");
+            },
+            error: function (data) {
+                console.info(data);
+                alert(data.status);
             }
         });
     }

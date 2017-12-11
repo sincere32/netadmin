@@ -38,6 +38,10 @@ func init() {
 			beego.NSInclude(
 				&controllers.GitlabController{},
 			)),
+		beego.NSNamespace("/device",
+			beego.NSInclude(
+				&controllers.DeviceContoller{},
+			)),
 	)
 	beego.AddNamespace(ns)
 

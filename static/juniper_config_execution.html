@@ -181,36 +181,14 @@
         }
     }
 </script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        get_hosts();
-
-    });
-</script>
-<script type="text/javascript">
-    function get_hosts() {
-        $("#host").multiSelect();
-        $("#host").empty().multiSelect('refresh');
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/devices/juniper",
-            async: false,
-            success: function (data) {
-                for (var i = 0; i < data.msg.length; i++) {
-                    console.log(data.msg[i]['ip']);
-                    $("#host").multiSelect('addOption', {value: data.msg[i]['ip'], text: data.msg[i]['ip'], index: i});
-                }
-            },
-            error: function (data) {
-                result.empty();
-                result.append(data.msg);
-            }
-        });
-    }
-</script>
 <script src="assets/js/gitlab.js"></script>
+<script src="assets/js/device.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+
+        //Get Hosts
+        GetHosts($("#host"),"juniper");
+
         //Get Repository
         GetRepository($("#repos"));
 
