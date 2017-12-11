@@ -65,14 +65,14 @@ type Gitlab struct {
 }
 
 type GitlabInterface interface {
-	GetReposID(reposName string) (id int, err error)
-	GetFileBlobID(reposID int, ref, filePath string) (blobID string, err error)
-	GetFileContent(reposID int, blobId string) (content string, err error)
+	GetReposID(reposName, url, token string) (id int, err error)
+	GetFileBlobID(reposID int, ref, filePath,url, token string) (blobID string, err error)
+	GetFileContent(reposID int, blobId , url, token string) (content string, err error)
 }
 
-func (g *Gitlab) GetReposID(reposName string) (id int, err error) {
-	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects", beego.AppConfig.String("gitlab_url")))
-	req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+func (g *Gitlab) GetReposID(reposName, url, token string) (id int, err error) {
+	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects", url))
+	req.Header("Private-Token", token)
 	req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 	response, err := req.Response()
 	beego.Debug(response)
@@ -85,7 +85,6 @@ func (g *Gitlab) GetReposID(reposName string) (id int, err error) {
 			return id, err
 		} else {
 			for _, p := range projects {
-				beego.Info(p, p.ReposName, reposName)
 				if p.ReposName == reposName {
 					return p.Id, err
 				}
@@ -93,14 +92,14 @@ func (g *Gitlab) GetReposID(reposName string) (id int, err error) {
 		}
 	} else {
 		beego.Error(err)
+		return 0, err
 	}
 	return id, err
 }
 
-func (g *Gitlab) GetFileContent(reposID int, blobId string) (content string, err error) {
-	beego.Info(fmt.Sprintf("%s/api/v4/projects/%d/repository/blobs/%s/raw", beego.AppConfig.String("gitlab_url"), reposID, blobId))
-	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/blobs/%s/raw", beego.AppConfig.String("gitlab_url"), reposID, blobId))
-	req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+func (g *Gitlab) GetFileContent(reposID int, blobId , url, token string) (content string, err error) {
+	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/blobs/%s/raw", url, reposID, blobId))
+	req.Header("Private-Token", token)
 	req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 	response, err := req.Response()
 	beego.Debug(response)
@@ -119,10 +118,9 @@ func (g *Gitlab) GetFileContent(reposID int, blobId string) (content string, err
 	return content, err
 }
 
-func (g *Gitlab) GetFileBlobID(reposID int, ref, filePath string) (blobID string, err error) {
-	beego.Info(fmt.Sprintf("%s/api/v4/projects/%d/repository/tree?recursive=true&ref=%s", beego.AppConfig.String("gitlab_url"), reposID, ref))
-	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/tree?recursive=true&ref=%s", beego.AppConfig.String("gitlab_url"), reposID, ref))
-	req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+func (g *Gitlab) GetFileBlobID(reposID int, ref, filePath,url, token string) (blobID string, err error) {
+	req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/tree?recursive=true&ref=%s", url, reposID, ref))
+	req.Header("Private-Token", token)
 	req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 	response, err := req.Response()
 	beego.Debug(response)

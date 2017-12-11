@@ -330,6 +330,7 @@
 </div>
 </div>
 </div>
+<script src="assets/js/gitlab.js"></script>
 <script type="text/javascript">
     var update_schedule_id = "";
     var update_device_ip = "";
@@ -354,6 +355,26 @@
         $("#modal_update_schedule").on("shown.bs.modal", function () {
             format_schedule_table("/api/v1/schedules/history?format=table&schedule_id=" + $("#update_schedule_id").val());
 
+        });
+
+
+        // Get Repository Branches
+        $("#repos").change(function () {
+            var repos = $("#repos option:selected");
+            if (repos.val() != 0) {
+                GetBranch($("#branch"), repos.text());
+            }
+        });
+        // Get Branch File List
+        $("#branch").change(function () {
+            GetFileList($("#repos option:selected").text(), $("#branch option:selected").text(),$("#file"))
+
+        });
+
+
+        // Script Content
+        $("#file").change(function () {
+            GetFileContent($("#repos option:selected").text(), $("#file option:selected").val(),$("#script"));
         });
     });
 
@@ -380,68 +401,6 @@
         }
     });
 
-    // Get Repository Branches
-    $("#repos").change(function () {
-        var repos = $("#repos option:selected");
-        if (repos.val() != 0) {
-            $("#branch").empty();
-            $.ajax({
-                type: "GET",
-                url: "/api/v1/gitlab/repository/branches?format=select&repos_name=" + repos.text(),
-                success: function (data) {
-                    if (data.status == "404") {
-                        alert("Get Repository Failed")
-                    } else {
-                        for (var i = 0; i < data.msg.length; i++) {
-                            $("#branch").append(data.msg[i]);
-                        }
-                    }
-
-                }
-            });
-        }
-    });
-    // Get Branch File List
-    $("#branch").change(function () {
-        var branch = $("#branch option:selected");
-        if (branch.val() != 0) {
-            $.ajax({
-                type: "GET",
-                url: "/api/v1/gitlab/repository/tree?repos_name=" + $("#repos option:selected").text() + "&branch=" + $("#branch option:selected").text(),
-                success: function (data) {
-                    if (data.status == "404") {
-                        alert("Get Repository Failed")
-                    } else {
-                        var file_select = $("#file");
-                        file_select.empty();
-                        file_select.append("<option selected='selected'  value=-1>Select File</option>");
-                        for (var i = 0; i < data.msg.length; i++) {
-                            if (data.msg[i]["type"] == "blob") {
-                                file_select.append("<option value=" + data.msg[i]['id'] + ">" + data.msg[i]["path"] + "</option>");
-                            }
-                        }
-                    }
-
-                }
-            });
-        }
-    });
-
-    // Script Content
-    $("#file").change(function () {
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/gitlab/repository/blobs?&repos_name=" + $("#repos option:selected").text() + "&blob_id=" +
-            $("#file option:selected").val(),
-            success: function (data) {
-                if (data.status == "404") {
-                    alert("Get Repository Failed")
-                } else {
-                    $("#script").val(data.msg);
-                }
-            }
-        });
-    });
 
     // Cron time tip
     $("[data-toggle='popover']").popover({
@@ -775,21 +734,7 @@
         $("#add_schedule_field").show();
         get_device_types();
         // get repository
-        $("#repos").empty();
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/gitlab/repository?format=select",
-            success: function (data) {
-                if (data.status == "1") {
-                    alert("Get Repository Failed")
-                } else {
-                    for (var i = 0; i < data.msg.length; i++) {
-                        $("#repos").append(data.msg[i]);
-                    }
-                }
-
-            }
-        });
+        GetRepository($("#repos"));
 
     }
 </script>

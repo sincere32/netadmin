@@ -161,6 +161,11 @@
                                                                                        id="add_modal_file_name"/>
                                                                             </div>
                                                                             <div class="form-group">
+                                                                                <label>Commit Message</label>
+                                                                                <input class="form-control"
+                                                                                       id="add_modal_commit_message"/>
+                                                                            </div>
+                                                                            <div class="form-group">
                                                                                 <label>File Content</label>
                                                                                 <textarea
                                                                                         style="max-width:500px;min-height:200px;;"
@@ -226,6 +231,11 @@
                                                                                        readonly="readonly"/>
                                                                             </div>
                                                                             <div class="form-group">
+                                                                                <label>Commit Message</label>
+                                                                                <input class="form-control"
+                                                                                       id="update_modal_commit_message"/>
+                                                                            </div>
+                                                                            <div class="form-group">
                                                                                 <label>File Content</label>
                                                                                 <textarea
                                                                                         style="max-width:500px;min-height:200px;"
@@ -266,50 +276,25 @@
         </div>
     </div>
 </div>
+<script src="assets/js/gitlab.js"></script>
 <script type="text/javascript">
     var table_data_url = "";
     $(document).ready(function () {
         //Get Repository
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/gitlab/repository?format=select",
-            success: function (data) {
-                if (data.status == "1") {
-                    alert("Get Repository Failed")
-                } else {
-                    for (var i = 0; i < data.msg.length; i++) {
-                        $("#repos").append(data.msg[i]);
-                    }
-                }
+        GetRepository($("#repos"));
 
-            }
-        });
         // Get Repository Branches
         $("#repos").change(function () {
             var repos = $("#repos option:selected");
             if (repos.val() != 0) {
-                $("#branch").empty();
-                $.ajax({
-                    type: "GET",
-                    url: "/api/v1/gitlab/repository/branches?format=select&repos_name=" + repos.text(),
-                    success: function (data) {
-                        if (data.status == "404") {
-                            alert("Get Repository Failed")
-                        } else {
-                            for (var i = 0; i < data.msg.length; i++) {
-                                $("#branch").append(data.msg[i]);
-                            }
-                        }
-
-                    }
-                });
+                GetBranch($("#branch"), repos.text());
             }
         });
         // Get Branch File List
         $("#branch").change(function () {
             var branch = $("#branch option:selected");
             if (branch.val() != 0) {
-                table_data_url = "/api/v1/gitlab/repository/tree?format=table&repos_name=" + $("#repos option:selected").text() +
+                table_data_url = "/v1.0.0/gitlab/repository/tree?repos_name=" + $("#repos option:selected").text() +
                     "&branch=" + branch.text();
                 list_files(table_data_url);
             }
@@ -320,40 +305,14 @@
             $("#add_modal_file_name").val("");
             $("#add_modal_file_content").val("");
             $("#add_modal_file_path").empty();
-            $.ajax({
-                type: "GET",
-                url: "/api/v1/gitlab/repository/tree?repos_name=" + $("#add_modal_repos_name").val() + "&branch=" +
-                $("#add_modal_branch").val(),
-                success: function (data) {
-                    if (data.status == "404") {
-                        alert("Get Repository Failed")
-                    } else {
-                        var add_path_select = $("#add_modal_file_path");
-                        add_path_select.append("<option selected='selected'  value=-1>default /</option>");
-                        for (var i = 0; i < data.msg.length; i++) {
-                            if (data.msg[i]["type"] == "tree") {
-                                add_path_select.append("<option value=" + i + ">" + data.msg[i]["name"] + "</option>");
-                            }
-                        }
-                    }
-                }
-            });
+
+            GetBranchTree($("#add_modal_repos_name").val(),$("#add_modal_branch").val(),$("#add_modal_file_path"));
         });
 
         // Init Update File Modal
         $("#modal_update_file").on("shown.bs.modal", function () {
-            $.ajax({
-                type: "GET",
-                url: "/api/v1/gitlab/repository/blobs?&repos_name=" + $("#update_modal_repos_name").val() + "&blob_id=" +
-                $("#update_modal_file_id").val(),
-                success: function (data) {
-                    if (data.status == "404") {
-                        alert("Get Repository Failed")
-                    } else {
-                        $("#update_modal_file_content").val(data.msg);
-                    }
-                }
-            });
+
+            GetFileContent($("#update_modal_repos_name").val(),$("#update_modal_file_id").val(), $("#update_modal_file_content"));
         });
     });
 
@@ -366,6 +325,8 @@
     function add_file() {
         var project_name = $("#add_modal_repos_name").val();
         var file_path = $("#add_modal_file_path option:selected");
+        var branch = $("#add_modal_branch").val();
+        var commit_message = $("#add_modal_commit_message").val();
         var file_name = $("#add_modal_file_name").val();
         var file_content = $("#add_modal_file_content").val();
 
@@ -374,21 +335,23 @@
         }
         var add_json = JSON.stringify({
             "repos_name": project_name,
+            "branch":branch,
+            "commit_message": commit_message,
             "file_name": file_name,
             "file_content": file_content
         });
         $.ajax({
             type: "POST",
-            url: "/api/v1/gitlab/repository/commits",
+            url: "/v1.0.0/gitlab/repository/commits",
             data: add_json,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             success: function (data) {
-                if (data.status == "0") {
+                if (data.status == 0) {
                     $("#modal_add_file").modal('hide');
                     list_files(table_data_url);
                 } else {
-                    alert("Add Failed");
+                    alert(data.msg);
                 }
             }
         });
@@ -397,25 +360,29 @@
     function update_file() {
         var project_name = $("#update_modal_repos_name").val();
         var file_name = $("#update_modal_file_name").val();
+        var branch = $("#update_modal_branch").val();
+        var commit_message = $("#update_modal_commit_message").val();
         var file_content = $("#update_modal_file_content").val();
 
         var update_json = JSON.stringify({
             "repos_name": project_name,
+            "branch":branch,
+            "commit_message": commit_message,
             "file_name": file_name,
             "file_content": file_content
         });
         $.ajax({
             type: "PATCH",
-            url: "/api/v1/gitlab/repository/commits",
+            url: "/v1.0.0/gitlab/repository/commits",
             data: update_json,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
             success: function (data) {
-                if (data.status == "0") {
+                if (data.status == 0) {
                     $("#modal_update_file").modal('hide');
                     list_files(table_data_url);
                 } else {
-                    alert("Update Failed");
+                    alert(data.msg);
                 }
             }
         });
@@ -423,17 +390,18 @@
 
     function delete_file() {
         var project_name = $("#update_modal_repos_name").val();
+        var branch = $("#update_modal_branch").val();
         var file_name = $("#update_modal_file_name").val();
 
         $.ajax({
             type: "DELETE",
-            url: "/api/v1/gitlab/repository/commits?repos_name=" + project_name + "&file_name=" + file_name,
+            url: "/v1.0.0/gitlab/repository/commits?repos_name=" + project_name + "&file_name=" + file_name +"&branch=" + branch,
             success: function (data) {
-                if (data.status == "0") {
+                if (data.status == 0) {
                     $("#modal_update_file").modal("hide");
                     list_files(table_data_url);
                 } else {
-                    alert("Delete Failed");
+                    alert(data.msg);
                 }
             }
         });

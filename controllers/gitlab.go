@@ -37,8 +37,9 @@ func (c *GitlabController) AddGitlabRepositoryCommits() {
 		if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 			c.ReturnJson(2, "No such repository")
 		}else{
-			reposId, _ := gitlab.GetReposID(commits.ReposName)
+			beego.Info("fffff")
 
+			reposId, _ := gitlab.GetReposID(commits.ReposName, gitlab.Url,gitlab.Token)
 			action := new(models.GitlabCommitAddUpdateAction)
 			action.Action = "create"
 			action.Content = commits.FileContent
@@ -50,10 +51,12 @@ func (c *GitlabController) AddGitlabRepositoryCommits() {
 			addCommits.Branch = commits.Branch
 			addCommits.CommitMessage = commits.CommitMessage
 
-			req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", beego.AppConfig.String("gitlab_url"), reposId))
-			req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+			req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", gitlab.Url, reposId))
+			req.Header("Private-Token", gitlab.Token)
 			req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 			req.JSONBody(addCommits)
+			beego.Info(addCommits)
+			beego.Info(req.String())
 			response, _ := req.Response()
 			resp, err := req.Bytes()
 			if err == nil {
@@ -96,7 +99,7 @@ func (c *GitlabController) UpdateGitlabRepositoryCommits() {
 		if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 			c.ReturnJson(2, "No such repository")
 		}else{
-			reposId, _ := gitlab.GetReposID(commits.ReposName)
+			reposId, _ := gitlab.GetReposID(commits.ReposName, gitlab.Url,gitlab.Token)
 
 			action := new(models.GitlabCommitAddUpdateAction)
 			action.Action = "update"
@@ -109,8 +112,8 @@ func (c *GitlabController) UpdateGitlabRepositoryCommits() {
 			addCommits.Branch = commits.Branch
 			addCommits.CommitMessage = commits.CommitMessage
 
-			req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", beego.AppConfig.String("gitlab_url"), reposId))
-			req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+			req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", gitlab.Url, reposId))
+			req.Header("Private-Token", gitlab.Token)
 			req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 			req.JSONBody(addCommits)
 			response, _ := req.Response()
@@ -147,8 +150,8 @@ func (c *GitlabController) DeleteGitlabRepositoryCommits() {
 
 	reposName := c.GetString("repos_name")
 	fileName := c.GetString("file_name")
-	branch := c.GetString("branch")
-	commitMessage := c.GetString("commit_message")
+	branch := c.GetString("branch","master")
+	commitMessage := c.GetString("commit_message","delete")
 
 	gitlab := models.Gitlab{ReposName: reposName}
 
@@ -158,7 +161,7 @@ func (c *GitlabController) DeleteGitlabRepositoryCommits() {
 	if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 		c.ReturnJson(2, "No such repository")
 	}else{
-		reposId, err := gitlab.GetReposID(reposName)
+		reposId, err := gitlab.GetReposID(reposName,gitlab.Url,gitlab.Token)
 
 		action := new(models.GitlabCommitDelAction)
 		action.Action = "delete"
@@ -170,8 +173,8 @@ func (c *GitlabController) DeleteGitlabRepositoryCommits() {
 		delCommits.Branch = branch
 		delCommits.CommitMessage = commitMessage
 
-		req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", beego.AppConfig.String("gitlab_url"), reposId))
-		req.Header("Private-Token", beego.AppConfig.String("gitlab_token"))
+		req := httplib.Post(fmt.Sprintf("%s/api/v4/projects/%d/repository/commits", gitlab.Url, reposId))
+		req.Header("Private-Token", gitlab.Token)
 		req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 		req.JSONBody(delCommits)
 		response, _ := req.Response()
@@ -213,7 +216,7 @@ func (c *GitlabController) GitlabRepositoryFileBlobs() {
 	if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 		c.ReturnJson(2, "No such repository")
 	} else {
-		reposId, _ := gitlab.GetReposID(reposName)
+		reposId, err := gitlab.GetReposID(reposName,gitlab.Url,gitlab.Token)
 		req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/blobs/%s/raw", gitlab.Url, reposId, blobId))
 		req.Header("Private-Token", gitlab.Token)
 		req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
@@ -230,6 +233,7 @@ func (c *GitlabController) GitlabRepositoryFileBlobs() {
 			}
 		} else {
 			beego.Error(-1, err.Error())
+			c.ReturnJson(-1, err.Error())
 		}
 
 	}
@@ -256,7 +260,7 @@ func (c *GitlabController) GitlabRepositoryTree() {
 	if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 		c.ReturnJson(2, "No such repository")
 	} else {
-		reposId, _ := gitlab.GetReposID(reposName)
+		reposId, err := gitlab.GetReposID(reposName,gitlab.Url,gitlab.Token)
 		req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/tree?ref=%s&recursive=true", gitlab.Url, reposId, branch))
 		req.Header("Private-Token", gitlab.Token)
 		req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
@@ -297,16 +301,14 @@ func (c *GitlabController) GitlabRepositoryBranch() {
 	if o.Read(&gitlab, "ReposName") == orm.ErrNoRows {
 		c.ReturnJson(2, "No such repository")
 	} else {
-		reposId, _ := gitlab.GetReposID(reposName)
+		reposId, err := gitlab.GetReposID(reposName,gitlab.Url,gitlab.Token)
 		req := httplib.Get(fmt.Sprintf("%s/api/v4/projects/%d/repository/branches", gitlab.Url, reposId))
 		req.Header("Private-Token", gitlab.Token)
 		req.Header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 		response, _ := req.Response()
 		resp, err := req.Bytes()
-		//err = json.Unmarshal(resp, &c.Message)
 		if err == nil {
 			if response.StatusCode == 200 {
-
 				json.Unmarshal(resp, &c.Messages)
 				c.ReturnJson(0, c.Messages)
 			} else {
