@@ -11,12 +11,19 @@ type ReturnTable struct {
 	TableData       interface{} `json:"data"`
 }
 
-type BaseController struct {
-	beego.Controller
+type ReturnJson struct {
+	Status int         `json:"status"`
+	Msg    interface{} `json:"msg"`
 }
 
-type FormatJsonInterface interface {
-	EncodeJson(status int, msg interface{})
+type Message map[string]interface{}
+
+type Messages [] Message
+
+type BaseController struct {
+	beego.Controller
+	Message
+	Messages
 }
 
 // Format Return Body
@@ -38,11 +45,6 @@ func (base *BaseController) ReturnNetDriverJson(msg interface{}) {
 }
 
 func (base *BaseController) ReturnJson(status int, msg interface{}) {
-	type ReturnJson struct {
-		Status int         `json:"status"`
-		Msg    interface{} `json:"msg"`
-	}
-
 	base.Data["json"] = ReturnJson{
 		Status: status,
 		Msg:    msg,
@@ -51,13 +53,13 @@ func (base *BaseController) ReturnJson(status int, msg interface{}) {
 }
 
 func (base *BaseController) ReturnOrmJson(status int, count int64, msg interface{}) {
-	type ReturnJson struct {
+	type ReturnOrmJ struct {
 		Status int         `json:"status"`
 		Count  int64       `json:"count"`
 		Msg    interface{} `json:"msg"`
 	}
 
-	base.Data["json"] = ReturnJson{
+	base.Data["json"] = ReturnOrmJ{
 		Status: status,
 		Count:  count,
 		Msg:    msg,
@@ -66,10 +68,6 @@ func (base *BaseController) ReturnOrmJson(status int, count int64, msg interface
 }
 
 func (base *BaseController) Error404() {
-	type ReturnJson struct {
-		Status int         `json:"status"`
-		Msg    interface{} `json:"msg"`
-	}
 	base.Data["json"] = ReturnJson{
 		Status: 404,
 		Msg:    "Not Found",
@@ -78,10 +76,6 @@ func (base *BaseController) Error404() {
 }
 
 func (base *BaseController) Error500() {
-	type ReturnJson struct {
-		Status int         `json:"status"`
-		Msg    interface{} `json:"msg"`
-	}
 	base.Data["json"] = ReturnJson{
 		Status: 500,
 		Msg:    "Internal Error",
@@ -89,34 +83,3 @@ func (base *BaseController) Error500() {
 	base.ServeJSON()
 }
 
-//func (base *BaseController) Prepare() {
-//	o := orm.NewOrm()
-//	o.Using("default")
-//
-//	beego.Info(base.Ctx.Request.RequestURI, base.Ctx.Request.Method)
-//	if base.Ctx.Request.RequestURI != "/v[0-9]\\.[0-9]\\.[0-9]/authentication" && base.Ctx.Request.Method != "POST"{
-//		beego.Info("33333")
-//		name := base.Ctx.GetCookie("nickname")
-//
-//		user := models.User{Name: name}
-//
-//		if o.Read(&user, "Name") != orm.ErrNoRows {
-//			sess := base.StartSession()
-//			defer sess.SessionRelease(base.Ctx.ResponseWriter)
-//			ses := base.CruSession.Get(beego.AppConfig.String("login_session"))
-//			cookie := base.Ctx.GetCookie(beego.AppConfig.String("login_session"))
-//			if ses != nil {
-//				if ses != cookie {
-//					base.ReturnJson(-1, "Authentication Error")
-//				}else{
-//
-//				}
-//
-//			} else {
-//				base.ReturnJson(1, "No Authentication Expired")
-//			}
-//		} else {
-//			base.ReturnJson(2, "No Such User Exist")
-//		}
-//	}
-//}

@@ -32,9 +32,10 @@ func InitDBPool(initDb string) error {
 		beego.AppConfig.String("db_name"),
 		beego.AppConfig.String("host"),
 		beego.AppConfig.String("port")), maxIdleConn, maxOpenConn)
-
+	beego.Info(err, initDb)
 	if err == nil && initDb == "yes" {
-		orm.RunSyncdb("default", true, true)
+		beego.Info("ffff")
+		orm.RunSyncdb("default", false, true)
 	}
 
 	return err
