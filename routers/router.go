@@ -30,9 +30,9 @@ func init() {
 			beego.NSInclude(
 				&controllers.AuthenticationController{},
 			)),
-		beego.NSNamespace("/junos",
+		beego.NSNamespace("/juniper",
 			beego.NSInclude(
-				&controllers.JunosController{},
+				&controllers.JuniperController{},
 			)),
 		beego.NSNamespace("/gitlab",
 			beego.NSInclude(

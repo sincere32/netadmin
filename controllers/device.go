@@ -45,15 +45,15 @@ func (c *DeviceContoller) GetDeviceTypes() {
 	var devices []models.Device
 	if _, err := o.QueryTable(dev).All(&devices); err == nil {
 		var deviceType []string
-		for _,d := range devices{
+		for _, d := range devices {
 			has := false
-			for _, dt := range deviceType{
+			for _, dt := range deviceType {
 				if d.Type == dt {
 					has = true
 					break
 				}
 			}
-			if !has{
+			if !has {
 				deviceType = append(deviceType, d.Type)
 			}
 
@@ -79,7 +79,7 @@ func (c *DeviceContoller) GetDevice() {
 
 	var dev models.Device
 	var devices []models.Device
-	if _, err := o.QueryTable(dev).Filter("type",deviceType).All(&devices); err == nil {
+	if _, err := o.QueryTable(dev).Filter("type", deviceType).All(&devices); err == nil {
 		c.ReturnTableJson(0, len(devices), len(devices), devices)
 	} else {
 		c.ReturnJson(1, err.Error())
@@ -102,7 +102,7 @@ func (c *DeviceContoller) AddDevice() {
 	if err != nil {
 		c.ReturnJson(200, err.Error())
 	} else {
-		if o.Read(device, "Name") == orm.ErrNoRows && o.Read(device,"Ip") == orm.ErrNoRows{
+		if o.Read(device, "Name") == orm.ErrNoRows && o.Read(device, "Ip") == orm.ErrNoRows {
 
 			if _, insertErr := o.Insert(device); insertErr == nil {
 				c.ReturnOrmJson(0, 1, device)

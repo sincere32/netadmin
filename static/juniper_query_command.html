@@ -80,11 +80,6 @@
                                                                    placeholder="command">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label>Format</label>
-                                                            <input type="text" class="form-control" id="format"
-                                                                   placeholder="text|json if null default text">
-                                                        </div>
-                                                        <div class="form-group">
                                                             <button class="btn btn-success"
                                                                     onclick="run_junos_command()">Submit
                                                             </button>
@@ -131,11 +126,7 @@
         var name = $("#name").val();
         var password = $("#password").val();
         var command = $("#command").val();
-        var format = $("#format").val();
-        var url = "";
-        if (format == "") {
-            format = "text";
-        }
+        var url = "/v1.0.0/juniper/command";
 
         var post_json = JSON.stringify({
             "hosts": hosts,
@@ -143,16 +134,10 @@
             "user": {
                 "name": name,
                 "password": password
-            },
-            "display": format
+            }
         });
         loading.empty();
         loading.append(img);
-        if (command.indexOf("show") != -1) {
-            url = "/api/v1/juniper/command";
-        } else {
-            url = "/api/v1/juniper/shell"
-        }
 
         $.ajax({
             type: "POST",
@@ -170,8 +155,8 @@
             },
             error: function (data, status) {
                 alert(status);
-                result.empty();
-                result.append(data.msg);
+                loading.empty();
+                loading.append(data.msg);
             }
         });
     }

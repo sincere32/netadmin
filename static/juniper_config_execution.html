@@ -116,7 +116,7 @@
                                                     <div class="panel-title"><h3>Juniper Result</h3></div>
                                                 </div>
                                                 <div class="panel-body">
-                                                    <ul class="list-group" id="result">
+                                                    <ul class="list-group" id="loading">
                                                     </ul>
                                                 </div>
                                             </div>
@@ -137,8 +137,8 @@
 </body>
 <script type="text/javascript">
     function run_gitlab_file() {
-        var loading = "<img src=\"/assets/img/loading_moji.gif\" class=\"img-responsive\" alt=\"Loading\">";
-        var result = $("#result");
+        var img = "<img src=\"/assets/img/loading_moji.gif\" class=\"img-responsive\" alt=\"Loading\">";
+        var loading = $("#loading");
         var hosts = new Array();
         $("#host :selected").each(function (i, selected) {
             hosts.push($(selected).text());
@@ -161,21 +161,25 @@
                 "ref": ref,
                 "file_path": file_path
             });
-            result.empty();
-            result.append(loading);
+            loading.empty();
+            loading.append(img);
             $.ajax({
                 type: "POST",
-                url: "/api/v1/juniper/config?format=html",
+                url: "/v1.0.0/juniper/config",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (data) {
-                    result.empty();
-                    result.append(data.msg);
+                    loading.empty();
+                    loading.append("                                                    <textarea\n" +
+                            "                                                            style=\"max-width:800px;min-height: 400px;min-width: 600px\"\n" +
+                            "                                                            id=\"result\" readonly=\"readonly\">\n" +
+                            "                                                    </textarea>");
+                    $("#result").val(data.msg);
                 },
                 error: function (data) {
-                    result.empty();
-                    result.append(data.msg);
+                    loading.empty();
+                    loading.append(data.msg);
                 }
             });
         }
