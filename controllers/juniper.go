@@ -98,7 +98,7 @@ func (c *JuniperController) Config() {
 			}
 		}
 
-	}else{
+	} else {
 		c.ReturnJson(-1, err.Error())
 	}
 

@@ -258,7 +258,6 @@
                                                                             <thead>
                                                                             <tr>
                                                                                 <th>Last Run Time</th>
-                                                                                <th>Next Run Time</th>
                                                                                 <th>Success</th>
                                                                             </tr>
                                                                             </thead>
@@ -354,7 +353,7 @@
 
         // Init Update Schedule Modal
         $("#modal_update_schedule").on("shown.bs.modal", function () {
-            format_schedule_table("/api/v1/schedules/history?format=table&schedule_id=" + $("#update_schedule_id").val());
+            format_schedule_table("/v1.0.0/task/"+ $("#update_schedule_id").val()+"/history");
 
         });
 
@@ -448,13 +447,11 @@
                     "repos_name": repos_name,
                     "branch": branch,
                     "device_ip": hosts[i],
-                    "schedule_name": schedule_name,
+                    "task_name": schedule_name,
                     "cron_time": schedule_cron_time,
                     "enabled": true,
-                    "user": {
-                        "name": name,
-                        "password": password
-                    },
+                    "username": name,
+                    "password": password,
                     "file_path": file_path,
                     "type": schedule_type,
                     "module": schedule_module
@@ -467,7 +464,7 @@
             });
             $.ajax({
                 type: "POST",
-                url: "/api/v1/schedules",
+                url: "/v1.0.0/task",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -505,14 +502,12 @@
             "device_ip": update_device_ip,
             "cron_time": cron_time,
             "enabled": enabled,
-            "user": {
-                "name": name,
-                "password": password
-            },
+            "username": name,
+            "password": password,
             "file_path": update_file_path,
             "type": update_schedule_type,
             "module": update_schedule_module,
-            "schedule_name": update_schedule_name
+            "task_name": update_schedule_name
         });
         schedules.push(schedule_json);
         var post_json = JSON.stringify({
@@ -520,7 +515,7 @@
         });
         $.ajax({
             type: "PATCH",
-            url: "/api/v1/schedules",
+            url: "/v1.0.0/task",
             data: post_json,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
@@ -575,11 +570,11 @@
             dataType: 'json',
             contentType: "application/json;charset=utf-8",
             ajax: {
-                url: "/api/v1/schedules?format=table"
+                url: "/v1.0.0/task"
             },
             columns: [
                 {"data": "device_ip"},
-                {"data": "schedule_name"},
+                {"data": "task_name"},
                 {"data": "type"},
                 {"data": "file_path"},
                 {"data": "last_run_time"},
@@ -615,8 +610,8 @@
                         update_enabled = t["enabled"];
 
                         update_schedule_id = t["id"];
-                        user_name = t["user"]["name"];
-                        password = t["user"]["password"];
+                        user_name = t["username"];
+                        password = t["password"];
                         cron_time = t["cron_time"];
                         break;
                     }
@@ -662,7 +657,6 @@
             },
             columns: [
                 {"data": "last_run_time"},
-                {"data": "next_run_time"},
                 {"data": "last_success"}
             ]
         });
@@ -711,7 +705,6 @@
             }
         });
     }
-
 
     function show_add_schedule() {
         $("#add_schedule_field").show();

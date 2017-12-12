@@ -74,7 +74,7 @@ func (c *CiscoController) Config() {
 				Hosts:       rec.Hosts,
 				User:        rec.User,
 				FileContent: fileContent,
-				BlobId:blobId,
+				BlobId:      blobId,
 			}
 
 			req := httplib.Post(fmt.Sprintf("%s/cisco/config", beego.AppConfig.String("netadmin_driver_url")))
@@ -99,7 +99,7 @@ func (c *CiscoController) Config() {
 			}
 		}
 
-	}else{
+	} else {
 		c.ReturnJson(-1, err.Error())
 	}
 

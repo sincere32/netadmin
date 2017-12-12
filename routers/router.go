@@ -46,6 +46,10 @@ func init() {
 			beego.NSInclude(
 				&controllers.CiscoController{},
 			)),
+		beego.NSNamespace("/task",
+			beego.NSInclude(
+				&controllers.TaskController{},
+			)),
 	)
 	beego.AddNamespace(ns)
 
