@@ -124,8 +124,6 @@
         var name = $("#name").val();
         var password = $("#password").val();
         var command = $("#command").val();
-        var url = "/api/v1/cisco/command";
-
         var post_json = JSON.stringify({
             "hosts": hosts,
             "command": command,
@@ -139,7 +137,7 @@
 
         $.ajax({
             type: "POST",
-            url: url,
+            url: "/v1.0.0/cisco/command",
             data: post_json,
             contentType: "application/json;charset=utf-8",
             dataType: "json",
@@ -151,10 +149,9 @@
                     "                                                    </textarea>");
                 $("#result").val(data.msg);
             },
-            error: function (data, status) {
-                alert(status);
-                result.empty();
-                result.append(data.msg);
+            error: function (data) {
+                loading.empty();
+                loading.append(data.msg);
             }
         });
     }
