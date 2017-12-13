@@ -9,6 +9,8 @@ import (
 	"gitee.com/pippozq/netadmin/models"
 
 	"time"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 type RoleContoller struct {
@@ -64,7 +66,6 @@ func (a *RoleContoller) AddRole() {
 	o.Using("default")
 	role := new(models.Role)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &role)
-	beego.Info(role)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
@@ -93,7 +94,6 @@ func (a *RoleContoller) UpdateRole() {
 	o.Using("default")
 	role := new(models.Role)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &role)
-	beego.Info(role)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
@@ -204,7 +204,9 @@ func (a *UserController) AddUser() {
 				if o.Read(role) == orm.ErrNoRows {
 					a.ReturnJson(-1, "No such role")
 				} else {
-
+					h := md5.New()
+					_, err = h.Write([]byte(user.Password))
+					user.Password =  hex.EncodeToString(h.Sum(nil))
 					if _, insertErr := o.Insert(user); insertErr == nil {
 						a.ReturnOrmJson(0, 1, user)
 					} else {
@@ -231,14 +233,17 @@ func (a *UserController) UpdateUser() {
 	o.Using("default")
 	user := new(models.User)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
-	beego.Info(user)
 	if err != nil {
 		a.ReturnJson(200, err.Error())
 	} else {
 		query := models.User{Name: user.Name}
 		if o.Read(&query, "Name") != orm.ErrNoRows {
+
+			h := md5.New()
+			_, err = h.Write([]byte(user.Password))
+
 			query.Name = user.Name
-			query.Password = user.Password
+			query.Password = hex.EncodeToString(h.Sum(nil))
 			query.Email = user.Email
 			query.Tel = user.Tel
 
@@ -303,17 +308,21 @@ func (a *AuthenticationController) SignIn() {
 
 	user := new(models.User)
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &user)
-	beego.Info(user)
+
 	if err == nil {
 		var query []models.User
-		beego.Info(user.Name)
+
 		o.QueryTable(user).Filter("name", user.Name).All(&query)
-		beego.Info(query)
+
 		// Check User Exist
 		if len(query) == 0 {
 			a.ReturnJson(2, "No such User")
 		} else {
-			if query[0].Password != user.Password {
+
+			h := md5.New()
+			_, err = h.Write([]byte(user.Password))
+			password := hex.EncodeToString(h.Sum(nil))
+			if query[0].Password != password {
 				a.ReturnJson(3, "Password is Wrong")
 			} else {
 				sess := a.StartSession()

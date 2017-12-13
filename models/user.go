@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego"
 )
 
 func init() {
@@ -22,4 +23,35 @@ type Role struct {
 	Name  string `orm:"size(50);"json:"name"`
 	Super bool   `orm:"default(False)"json:"super"`
 	Rw    bool   `orm:"default(False)"json:"rw"`
+}
+
+
+
+func InitUser() bool{
+	o := orm.NewOrm()
+	o.Using("default")
+
+	role := Role{Name:"admin",Super:true}
+	if o.Read(&role,"Name") == orm.ErrNoRows{
+		if _, err := o.Insert(&role);err != nil{
+			return false
+		}
+	}else{
+		if _, err := o.Update(&role);err != nil{
+			return false
+		}
+	}
+
+	admin := User{Name:"admin",Password:"696d29e0940a4957748fe3fc9efd22a3",Role:&role}
+	if o.Read(&admin,"Name") == orm.ErrNoRows{
+		if _, err := o.Insert(&admin);err != nil{
+			return false
+		}
+	}else{
+		admin.Password = "696d29e0940a4957748fe3fc9efd22a3"
+		if line, err := o.Update(&admin);err != nil{
+			return false
+		}
+	}
+	return true
 }

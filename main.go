@@ -10,6 +10,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/astaxie/beego/session/redis"
 	_ "github.com/lib/pq"
+	"gitee.com/pippozq/netadmin/models"
 )
 
 func InitDBPool(initDb string) error {
@@ -42,11 +43,9 @@ func InitDBPool(initDb string) error {
 func main() {
 	beego.SetLevel(beego.LevelInformational)
 
-	initDb := flag.String("syncdb", "no", "init db")
-	mode := flag.String("mode", "test", "run mode")
+	initDb := flag.String("sync_db", "no", "init db")
+	initUser := flag.String("init_user", "admin", "Init Admin User")
 	flag.Parse()
-
-	beego.BConfig.RunMode = *mode
 
 	beego.BConfig.WebConfig.DirectoryIndex = true
 	beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
@@ -56,6 +55,11 @@ func main() {
 		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
 	} else {
 		schedules.InitTask()
+
+		if *initUser == "yes"{
+			models.InitUser()
+		}
+
 		beego.ErrorController(&utils.BaseController{})
 		beego.Run()
 	}
