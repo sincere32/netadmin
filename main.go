@@ -44,7 +44,7 @@ func main() {
 	beego.SetLevel(beego.LevelInformational)
 
 	initDb := flag.String("sync_db", "no", "init db")
-	initUser := flag.String("init_user", "admin", "Init Admin User")
+	initUser := flag.String("init_user", "no", "Init Admin User")
 	flag.Parse()
 
 	beego.BConfig.WebConfig.DirectoryIndex = true
