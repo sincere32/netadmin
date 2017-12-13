@@ -157,7 +157,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-nuget');
 
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-schedules')(grunt);
     grunt.registerTask('default', ['jshint', 'jscs', 'less', 'env:paris', 'connect', 'jasmine']);
     grunt.registerTask('build:travis', [
         // code style

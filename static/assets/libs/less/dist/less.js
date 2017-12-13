@@ -10225,7 +10225,7 @@ function asap(task) {
     rawAsap(rawTask);
 }
 
-// We wrap tasks with recyclable task objects.  A task object implements
+// We wrap schedules with recyclable task objects.  A task object implements
 // `call`, just like a function.
 function RawTask() {
     this.task = null;
@@ -10244,7 +10244,7 @@ RawTask.prototype.call = function () {
             asap.onerror(error);
         } else {
             // In a web browser, exceptions are not fatal. However, to avoid
-            // slowing down the queue of pending tasks, we rethrow the error in a
+            // slowing down the queue of pending schedules, we rethrow the error in a
             // lower priority turn.
             pendingErrors.push(error);
             requestErrorThrow();
@@ -10264,7 +10264,7 @@ RawTask.prototype.call = function () {
 // events in browsers.
 //
 // An exception thrown by a task will permanently interrupt the processing of
-// subsequent tasks. The higher level `asap` function ensures that if an
+// subsequent schedules. The higher level `asap` function ensures that if an
 // exception is thrown by a task, that the task queue will continue flushing as
 // soon as possible, but if you use `rawAsap` directly, you are responsible to
 // either ensure that no exceptions are thrown from your task, or to manually
@@ -10291,13 +10291,13 @@ var requestFlush;
 // preserved between calls to `flush` so that it can be resumed if
 // a task throws an exception.
 var index = 0;
-// If a task schedules additional tasks recursively, the task queue can grow
+// If a task schedules additional schedules recursively, the task queue can grow
 // unbounded. To prevent memory exhaustion, the task queue will periodically
-// truncate already-completed tasks.
+// truncate already-completed schedules.
 var capacity = 1024;
 
-// The flush function processes all tasks that have been scheduled with
-// `rawAsap` unless and until one of those tasks throws an exception.
+// The flush function processes all schedules that have been scheduled with
+// `rawAsap` unless and until one of those schedules throws an exception.
 // If a task throws an exception, `flush` ensures that its state will remain
 // consistent and will resume where it left off when called again.
 // However, `flush` does not make any arrangements to be called again if an
@@ -10310,10 +10310,10 @@ function flush() {
         index = index + 1;
         queue[currentIndex].call();
         // Prevent leaking memory for long chains of recursive calls to `asap`.
-        // If we call `asap` within tasks scheduled by `asap`, the queue will
+        // If we call `asap` within schedules scheduled by `asap`, the queue will
         // grow, but to avoid an O(n) walk for every task we execute, we don't
-        // shift tasks off the queue after they have been executed.
-        // Instead, we periodically shift 1024 tasks off the queue.
+        // shift schedules off the queue after they have been executed.
+        // Instead, we periodically shift 1024 schedules off the queue.
         if (index > capacity) {
             // Manually shift all values starting at the index back to the
             // beginning of the queue.
@@ -10356,7 +10356,7 @@ if (typeof BrowserMutationObserver === "function") {
 // MessageChannels are desirable because they give direct access to the HTML
 // task queue, are implemented in Internet Explorer 10, Safari 5.0-1, and Opera
 // 11-12, and in web workers in many engines.
-// Although message channels yield to any queued rendering and IO tasks, they
+// Although message channels yield to any queued rendering and IO schedules, they
 // would be better than imposing the 4ms delay of timers.
 // However, they do not work reliably in Internet Explorer or Safari.
 

@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	_ "gitee.com/pippozq/netadmin/models"
 	_ "gitee.com/pippozq/netadmin/routers"
 	"gitee.com/pippozq/netadmin/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/astaxie/beego/session/redis"
 	_ "github.com/lib/pq"
+	"gitee.com/pippozq/netadmin/schedules"
 )
 
 func InitDBPool(initDb string) error {
@@ -38,6 +38,7 @@ func InitDBPool(initDb string) error {
 
 	return err
 }
+
 func main() {
 	beego.SetLevel(beego.LevelInformational)
 
@@ -54,7 +55,7 @@ func main() {
 	if err != nil {
 		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
 	} else {
-
+		schedules.InitTask()
 		beego.ErrorController(&utils.BaseController{})
 		beego.Run()
 	}

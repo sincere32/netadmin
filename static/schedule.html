@@ -539,7 +539,7 @@
     function delete_schedule() {
         $.ajax({
             type: "DELETE",
-            url: "/api/v1/schedules?key=" + update_schedule_id,
+            url: "/v1.0.0/task?name=" + update_schedule_name +"&ip="+update_device_ip,
             async: false,
             success: function (data) {
                 if (data.status == "1") {
@@ -606,7 +606,7 @@
                         update_file_path = t["file_path"];
                         update_schedule_module = t["module"];
                         update_schedule_type = t["type"];
-                        update_schedule_name = t["schedule_name"];
+                        update_schedule_name = t["task_name"];
                         update_enabled = t["enabled"];
 
                         update_schedule_id = t["id"];

@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"gitee.com/pippozq/netadmin/models"
 	"gitee.com/pippozq/netadmin/utils"
-	"gitee.com/pippozq/netadmin/tasks"
+	"gitee.com/pippozq/netadmin/schedules"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
+
 
 type TaskController struct {
 	utils.BaseController
@@ -61,10 +62,13 @@ func (c *TaskController) AddTaskController() {
 				var query []models.Task
 				o.QueryTable(task).Filter("name",task.Name).Filter("ip",task.Ip).All(&query)
 				if len(query) == 0{
-					tasks.Schedule(task)
+					s := new(schedules.Schedule)
+					s.T = task
+					s.AddTask()
 					if _, insertErr := o.Insert(task); insertErr == nil {
 						addList = append(addList, task)
 						beego.Info(*task)
+						s.RunTask()
 					} else {
 						addErr = true
 						errList = append(errList, task)
@@ -92,7 +96,7 @@ func (c *TaskController) AddTaskController() {
 // @Param   post_body body  string  true "{"name":'your name ',"super": false, "rw":false}"
 // @Success 200 {object} models.Task
 // @Failure 404 Not Found
-// @router / [post]
+// @router / [patch]
 func (c *TaskController) UpdateTaskController() {
 	o := orm.NewOrm()
 	o.Using("default")
@@ -107,17 +111,29 @@ func (c *TaskController) UpdateTaskController() {
 		for _, t := range ts["schedules"] {
 			task := new(models.Task)
 			err := json.Unmarshal([]byte(t), task)
+			beego.Info(task)
 			if err != nil {
 				c.ReturnJson(-1, err.Error())
 			} else {
 				var query []models.Task
-				tasks.Schedule(task)
 				o.QueryTable(task).Filter("name",task.Name).Filter("ip",task.Ip).All(&query)
 				if len(query) == 1{
-					if _, updateErr := o.Update(task); updateErr == nil {
+
+					s := new(schedules.Schedule)
+					s.T =  task
+					s.AddTask()
+
+					query[0].UserName = task.UserName
+					query[0].Password = task.Password
+					query[0].CronTime = task.CronTime
+					query[0].Enabled = task.Enabled
+
+					if _, updateErr := o.Update(&query[0]); updateErr == nil {
 						addList = append(addList, task)
+						s.RunTask()
 					} else {
 						addErr = true
+						beego.Error(updateErr)
 						errList = append(errList, task)
 					}
 				}else {
@@ -134,19 +150,6 @@ func (c *TaskController) UpdateTaskController() {
 		}
 
 	}
-
-	//if err != nil {
-	//	c.ReturnJson(-1, err.Error())
-	//} else {
-	//
-	//}
-	//tk1 := toolbox.NewTask("tk1", "0/10 * * * * *", test)
-	//nowTime := time.Now()
-	//beego.Info(nowTime)
-	//tk1.SetNext(nowTime)
-	//toolbox.AddTask("tk1", tk1)
-	//toolbox.StartTask()
-
 }
 
 
@@ -169,6 +172,9 @@ func (c *TaskController) DeleteTaskController() {
 
 	if o.Read(&task, "Name","Ip") != orm.ErrNoRows {
 		if count, delErr := o.Delete(&task); delErr == nil {
+			s := new(schedules.Schedule)
+			s.T = &task
+			s.DeleteTask()
 			c.ReturnOrmJson(0, count, task)
 		} else {
 			c.ReturnOrmJson(1, 0, delErr.Error())
