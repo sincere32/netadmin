@@ -54,13 +54,17 @@ func main() {
 	if err != nil {
 		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
 	} else {
-		schedules.InitTask()
-
+		initUserDone := true
 		if *initUser == "yes"{
-			models.InitUser()
+			initUserDone = models.InitUser()
+		}
+		if initUserDone{
+			schedules.InitTask()
+			beego.ErrorController(&utils.BaseController{})
+			beego.Run()
+		}else{
+			beego.Error("Init User Error")
 		}
 
-		beego.ErrorController(&utils.BaseController{})
-		beego.Run()
 	}
 }

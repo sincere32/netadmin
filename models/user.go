@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-	"github.com/astaxie/beego"
 )
 
 func init() {
@@ -49,7 +48,7 @@ func InitUser() bool{
 		}
 	}else{
 		admin.Password = "696d29e0940a4957748fe3fc9efd22a3"
-		if line, err := o.Update(&admin);err != nil{
+		if _, err := o.Update(&admin);err != nil{
 			return false
 		}
 	}
