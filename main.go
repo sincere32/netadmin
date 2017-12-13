@@ -4,12 +4,12 @@ import (
 	"flag"
 	"fmt"
 	_ "gitee.com/pippozq/netadmin/routers"
+	"gitee.com/pippozq/netadmin/schedules"
 	"gitee.com/pippozq/netadmin/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/astaxie/beego/session/redis"
 	_ "github.com/lib/pq"
-	"gitee.com/pippozq/netadmin/schedules"
 )
 
 func InitDBPool(initDb string) error {

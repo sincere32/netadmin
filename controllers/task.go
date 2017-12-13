@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitee.com/pippozq/netadmin/models"
-	"gitee.com/pippozq/netadmin/utils"
 	"gitee.com/pippozq/netadmin/schedules"
+	"gitee.com/pippozq/netadmin/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"time"
 )
-
 
 type TaskController struct {
 	utils.BaseController
@@ -25,9 +25,29 @@ func (c *TaskController) GetTaskList() {
 	o.Using("default")
 
 	var task models.Task
+
 	var tasks []models.Task
-	if _, err := o.QueryTable(task).RelatedSel().All(&tasks); err == nil {
-		c.ReturnTableJson(0, len(tasks), len(tasks), tasks)
+
+	var taskHistory models.TaskHistory
+	var taskHistories []*models.TaskHistory
+
+	var returnTable []models.Task
+
+	if _, err := o.QueryTable(task).All(&tasks); err == nil {
+
+		for _, t := range tasks {
+			o.QueryTable(taskHistory).Filter("Task", t).RelatedSel().OrderBy("-id").All(&taskHistories)
+			if len(taskHistories) == 0 {
+				t.LastSuccess = false
+				t.LastRunTime = time.Now()
+			} else {
+				t.LastSuccess = taskHistories[0].LastSuccess
+				t.LastRunTime = taskHistories[0].LastRunTime
+			}
+			returnTable = append(returnTable, t)
+		}
+
+		c.ReturnTableJson(0, len(returnTable), len(returnTable), returnTable)
 	} else {
 		c.ReturnJson(1, err.Error())
 	}
@@ -60,21 +80,20 @@ func (c *TaskController) AddTaskController() {
 			} else {
 
 				var query []models.Task
-				o.QueryTable(task).Filter("name",task.Name).Filter("ip",task.Ip).All(&query)
-				if len(query) == 0{
+				o.QueryTable(task).Filter("name", task.Name).Filter("ip", task.Ip).All(&query)
+				if len(query) == 0 {
 					s := new(schedules.Schedule)
 					s.T = task
 					s.AddTask()
 					if _, insertErr := o.Insert(task); insertErr == nil {
 						addList = append(addList, task)
-						beego.Info(*task)
 						s.RunTask()
 					} else {
 						addErr = true
 						errList = append(errList, task)
 					}
-				}else {
-					beego.Info(fmt.Sprintf("This Name Already Exist:%s", task.Name))
+				} else {
+					beego.Error(fmt.Sprintf("This Name Already Exist:%s", task.Name))
 					errList = append(errList, task)
 				}
 			}
@@ -89,7 +108,6 @@ func (c *TaskController) AddTaskController() {
 	}
 
 }
-
 
 // @Title Update Task
 // @Description Update Task
@@ -111,33 +129,39 @@ func (c *TaskController) UpdateTaskController() {
 		for _, t := range ts["schedules"] {
 			task := new(models.Task)
 			err := json.Unmarshal([]byte(t), task)
-			beego.Info(task)
 			if err != nil {
 				c.ReturnJson(-1, err.Error())
 			} else {
 				var query []models.Task
-				o.QueryTable(task).Filter("name",task.Name).Filter("ip",task.Ip).All(&query)
-				if len(query) == 1{
-
-					s := new(schedules.Schedule)
-					s.T =  task
-					s.AddTask()
+				o.QueryTable(task).Filter("name", task.Name).Filter("ip", task.Ip).All(&query)
+				if len(query) == 1 {
 
 					query[0].UserName = task.UserName
 					query[0].Password = task.Password
 					query[0].CronTime = task.CronTime
 					query[0].Enabled = task.Enabled
 
+					s := new(schedules.Schedule)
+					s.T = &query[0]
+					s.AddTask()
+
 					if _, updateErr := o.Update(&query[0]); updateErr == nil {
 						addList = append(addList, task)
-						s.RunTask()
+
+						// enable or disable
+						if query[0].Enabled {
+							s.RunTask()
+						} else {
+							s.DeleteTask()
+						}
+
 					} else {
 						addErr = true
 						beego.Error(updateErr)
 						errList = append(errList, task)
 					}
-				}else {
-					beego.Info(fmt.Sprintf("This Name Not Exist:%s", task.Name))
+				} else {
+					beego.Error(fmt.Sprintf("This Name Not Exist:%s", task.Name))
 					errList = append(errList, task)
 				}
 			}
@@ -152,8 +176,6 @@ func (c *TaskController) UpdateTaskController() {
 	}
 }
 
-
-
 // @Title Delete Task
 // @Description Delete Device
 // @Param   name query  string  true  "task name"
@@ -167,10 +189,9 @@ func (c *TaskController) DeleteTaskController() {
 
 	name := c.GetString("name")
 	ip := c.GetString("ip")
-	beego.Info(name, ip)
-	task := models.Task{Name: name,Ip:ip}
+	task := models.Task{Name: name, Ip: ip}
 
-	if o.Read(&task, "Name","Ip") != orm.ErrNoRows {
+	if o.Read(&task, "Name", "Ip") != orm.ErrNoRows {
 		if count, delErr := o.Delete(&task); delErr == nil {
 			s := new(schedules.Schedule)
 			s.T = &task
@@ -198,7 +219,7 @@ func (c *TaskController) GetTaskHistory() {
 
 	var th models.TaskHistory
 	var ths []models.TaskHistory
-	if _, err := o.QueryTable(th).Filter("task_id",id).All(&ths); err == nil {
+	if _, err := o.QueryTable(th).Filter("task_id", id).OrderBy("-last_run_time").All(&ths); err == nil {
 		c.ReturnTableJson(0, len(ths), len(ths), ths)
 	} else {
 		c.ReturnJson(1, err.Error())
@@ -206,7 +227,7 @@ func (c *TaskController) GetTaskHistory() {
 
 }
 
-func (c *TaskController)CheckTimeStr(){
+func (c *TaskController) CheckTimeStr() {
 	if err := recover(); err != nil {
 		c.ReturnJson(-1, err)
 	}

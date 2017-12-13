@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (s *Schedule) JuniperConfigTask() error {
+func (s *Schedule) CiscoConfigTask() error {
 
 	o := orm.NewOrm()
 	o.Using("default")
@@ -31,15 +31,16 @@ func (s *Schedule) JuniperConfigTask() error {
 		blobId, _ := gitlab.GetFileBlobID(reposId, s.T.Branch, s.T.FilePath, gitlab.Url, gitlab.Token)
 		fileContent, _ := gitlab.GetFileContent(reposId, blobId, gitlab.Url, gitlab.Token)
 
-		juniperConfig := models.JuniperConfigPost{
+		ciscoConfig := models.CiscoConfigPost{
 			Hosts:       []string{s.T.Ip},
-			User:        models.JuniperUser{Name: s.T.UserName, Password: s.T.Password},
+			User:        models.CiscoUser{Name: s.T.UserName, Password: s.T.Password},
+			BlobId:blobId,
 			FileContent: fileContent,
 		}
 
-		req := httplib.Post(fmt.Sprintf("%s/juniper/config", beego.AppConfig.String("netadmin_driver_url")))
+		req := httplib.Post(fmt.Sprintf("%s/cisco/config", beego.AppConfig.String("netadmin_driver_url")))
 		req.Header("Content-Type", "application/json; charset=UTF-8")
-		req.JSONBody(juniperConfig)
+		req.JSONBody(ciscoConfig)
 		response, err := req.Response()
 		if err != nil {
 			history.TaskMsg = err.Error()
@@ -76,7 +77,7 @@ func (s *Schedule) JuniperConfigTask() error {
 	return nil
 }
 
-func (s *Schedule) JuniperCommandTask() error {
+func (s *Schedule) CiscoCommandTask() error {
 
 	o := orm.NewOrm()
 	o.Using("default")
@@ -103,14 +104,14 @@ func (s *Schedule) JuniperCommandTask() error {
 			Command: fileContent,
 		}
 
-		req := httplib.Post(fmt.Sprintf("%s/juniper/command", beego.AppConfig.String("netadmin_driver_url")))
+		req := httplib.Post(fmt.Sprintf("%s/cisco/command", beego.AppConfig.String("netadmin_driver_url")))
 		req.Header("Content-Type", "application/json; charset=UTF-8")
 		req.JSONBody(juniperCommand)
 		response, err := req.Response()
 		if err != nil {
 			history.TaskMsg = err.Error()
 			history.LastSuccess = false
-		} else {
+		} else {history.TaskMsg = s.Message["msg"].(string)
 			if response.StatusCode == 200 {
 				resultByte, _ := req.Bytes()
 				err = json.Unmarshal(resultByte, &s.Message)

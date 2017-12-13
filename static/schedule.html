@@ -408,15 +408,11 @@
         trigger: "focus",
         html: true,
         title: "Cron Time Tips",
-        content: "<b>Cron time format</b><br>second minute hour day month year</br>" +
-        "<b>Per minute</b></br>0 */1 * * * * or 0 */1<br>" +
-        "<b>Per hour</b><br>0 0 * * * *or 0 <br>" +
-        "<b>3-8 hour per day</b><br>0 0 3-8 * * * or 0 0 3-8<br>" +
-        "<b>12:30:35 per day</b><br> 35 30 12 * * * or 35 30 12<br>" +
-        "<b>Default</b><br>" +
-        "minute default 0 if leave blank<br>" +
-        "hour,day,month,year default * if leave blank<br>" +
-        "default cron time is per hour if whole text leave blank"
+        content: "<b>Cron time format</b><br>second minute hour day month week</br>" +
+        "<b>Per minute</b></br>0 */1 * * * * <br>" +
+        "<b>Per hour</b><br>0 0 * * * *<br>" +
+        "<b>3-8 hour per day</b><br>0 0 3-8 * * *<br>" +
+        "<b>12:30:35 per day</b><br> 35 30 12 * * *<br>"
     });
 
 

@@ -23,25 +23,33 @@ type JuniperController struct {
 // @router /command [post]
 func (c *JuniperController) Command() {
 
-	req := httplib.Post(fmt.Sprintf("%s/juniper/command", beego.AppConfig.String("netadmin_driver_url")))
-	req.Header("Content-Type", "application/json; charset=UTF-8")
-	req.Body(c.Ctx.Input.RequestBody)
-	response, err := req.Response()
-	if err != nil {
-		c.ReturnJson(-1, err.Error())
-	} else {
-		if response.StatusCode == 200 {
-			resultByte, _ := req.Bytes()
-			err = json.Unmarshal(resultByte, &c.Message)
-			if err == nil {
-				c.ReturnNetDriverJson(c.Message)
-			} else {
-				beego.Error(err)
-				c.ReturnJson(-1, err.Error())
-			}
+	rec := new(models.JuniperCommandRec)
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &rec)
 
+	if err == nil {
+		req := httplib.Post(fmt.Sprintf("%s/juniper/command", beego.AppConfig.String("netadmin_driver_url")))
+		req.Header("Content-Type", "application/json; charset=UTF-8")
+		req.JSONBody(rec)
+		response, err := req.Response()
+		if err != nil {
+			c.ReturnJson(-1, err.Error())
+		} else {
+			if response.StatusCode == 200 {
+				resultByte, _ := req.Bytes()
+				err = json.Unmarshal(resultByte, &c.Message)
+				if err == nil {
+					c.ReturnNetDriverJson(c.Message)
+				} else {
+					beego.Error(err)
+					c.ReturnJson(-1, err.Error())
+				}
+
+			}
 		}
+	} else {
+		c.ReturnJson(-1, err.Error())
 	}
+
 }
 
 // @Title  Juniper Config
