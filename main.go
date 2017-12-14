@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gitee.com/pippozq/netadmin/models"
 	_ "gitee.com/pippozq/netadmin/routers"
 	"gitee.com/pippozq/netadmin/schedules"
 	"gitee.com/pippozq/netadmin/utils"
@@ -10,7 +11,6 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/astaxie/beego/session/redis"
 	_ "github.com/lib/pq"
-	"gitee.com/pippozq/netadmin/models"
 )
 
 func InitDBPool(initDb string) error {
@@ -55,14 +55,14 @@ func main() {
 		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
 	} else {
 		initUserDone := true
-		if *initUser == "yes"{
+		if *initUser == "yes" {
 			initUserDone = models.InitUser()
 		}
-		if initUserDone{
+		if initUserDone {
 			schedules.InitTask()
 			beego.ErrorController(&utils.BaseController{})
 			beego.Run()
-		}else{
+		} else {
 			beego.Error("Init User Error")
 		}
 

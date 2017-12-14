@@ -373,8 +373,6 @@ func (c *GitlabController) AddGitlabRepository() {
 
 }
 
-
-
 // @Title Update Gitlab Repository
 // @Description Update Gitlab Repository
 // @Param   post_body body  string  true "{ 'repos_name': 'repos_name', 'url': 'url', 'user':'user','token': 'token'}"
@@ -392,9 +390,9 @@ func (c *GitlabController) UpdateGitlabRepository() {
 	if err != nil {
 		c.ReturnJson(0, err.Error())
 	} else {
-		var query = models.Gitlab{ReposName:gitlab.ReposName}
+		var query = models.Gitlab{ReposName: gitlab.ReposName}
 
-		if o.Read(&query,"repos_name") != orm.ErrNoRows {
+		if o.Read(&query, "repos_name") != orm.ErrNoRows {
 
 			query.ReposName = gitlab.ReposName
 			query.Url = gitlab.Url
@@ -406,14 +404,13 @@ func (c *GitlabController) UpdateGitlabRepository() {
 			} else {
 				c.ReturnJson(1, updateErr.Error())
 			}
-		}else {
+		} else {
 			c.ReturnJson(2, "No Such Repository")
 		}
 
 	}
 
 }
-
 
 // @Title Delete Repository
 // @Description Delete Repository

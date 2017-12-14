@@ -8,9 +8,9 @@ import (
 
 	"gitee.com/pippozq/netadmin/models"
 
-	"time"
 	"crypto/md5"
 	"encoding/hex"
+	"time"
 )
 
 type RoleContoller struct {
@@ -206,7 +206,7 @@ func (a *UserController) AddUser() {
 				} else {
 					h := md5.New()
 					_, err = h.Write([]byte(user.Password))
-					user.Password =  hex.EncodeToString(h.Sum(nil))
+					user.Password = hex.EncodeToString(h.Sum(nil))
 					if _, insertErr := o.Insert(user); insertErr == nil {
 						a.ReturnOrmJson(0, 1, user)
 					} else {

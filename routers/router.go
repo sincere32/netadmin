@@ -16,6 +16,8 @@ func init() {
 	beego.InsertFilter("/*", beego.BeforeExec, filters.RoleFilter)
 	beego.InsertFilter("/*./user", beego.BeforeExec, filters.UserFilter)
 	beego.InsertFilter("/*./user/:name", beego.BeforeExec, filters.UserFilter)
+	beego.InsertFilter("/*./role", beego.BeforeExec, filters.UserRoleFilter)
+	beego.InsertFilter("/*./role/:name", beego.BeforeExec, filters.UserRoleFilter)
 
 	ns := beego.NewNamespace("/v1.0.0",
 		beego.NSNamespace("/role",

@@ -85,10 +85,24 @@ func UserFilter(ctx *context.Context) {
 	o.QueryTable(user).Filter("name", name).RelatedSel().All(&query)
 
 	super := query[0].Role.Super
-	rw := query[0].Role.Rw
-	beego.Info(super, rw, query[0])
 
-	if !super && !rw {
-		ReturnJson(ctx, 1, "Authority is ReadOnly")
+	if !super {
+		ReturnJson(ctx, 1, "Authority is Not Super")
+	}
+}
+
+func UserRoleFilter(ctx *context.Context) {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	name := ctx.GetCookie("nickname")
+	var user models.User
+	var query []models.User
+
+	o.QueryTable(user).Filter("name", name).RelatedSel().All(&query)
+
+	super := query[0].Role.Super
+	if !super {
+		ReturnJson(ctx, 1, "Authority is Not Super")
 	}
 }

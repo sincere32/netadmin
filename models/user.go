@@ -24,31 +24,29 @@ type Role struct {
 	Rw    bool   `orm:"default(False)"json:"rw"`
 }
 
-
-
-func InitUser() bool{
+func InitUser() bool {
 	o := orm.NewOrm()
 	o.Using("default")
 
-	role := Role{Name:"admin",Super:true}
-	if o.Read(&role,"Name") == orm.ErrNoRows{
-		if _, err := o.Insert(&role);err != nil{
+	role := Role{Name: "admin", Super: true}
+	if o.Read(&role, "Name") == orm.ErrNoRows {
+		if _, err := o.Insert(&role); err != nil {
 			return false
 		}
-	}else{
-		if _, err := o.Update(&role);err != nil{
+	} else {
+		if _, err := o.Update(&role); err != nil {
 			return false
 		}
 	}
 
-	admin := User{Name:"admin",Password:"696d29e0940a4957748fe3fc9efd22a3",Role:&role}
-	if o.Read(&admin,"Name") == orm.ErrNoRows{
-		if _, err := o.Insert(&admin);err != nil{
+	admin := User{Name: "admin", Password: "696d29e0940a4957748fe3fc9efd22a3", Role: &role}
+	if o.Read(&admin, "Name") == orm.ErrNoRows {
+		if _, err := o.Insert(&admin); err != nil {
 			return false
 		}
-	}else{
+	} else {
 		admin.Password = "696d29e0940a4957748fe3fc9efd22a3"
-		if _, err := o.Update(&admin);err != nil{
+		if _, err := o.Update(&admin); err != nil {
 			return false
 		}
 	}

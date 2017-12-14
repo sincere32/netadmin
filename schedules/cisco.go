@@ -34,7 +34,7 @@ func (s *Schedule) CiscoConfigTask() error {
 		ciscoConfig := models.CiscoConfigPost{
 			Hosts:       []string{s.T.Ip},
 			User:        models.CiscoUser{Name: s.T.UserName, Password: s.T.Password},
-			BlobId:blobId,
+			BlobId:      blobId,
 			FileContent: fileContent,
 		}
 
@@ -111,7 +111,8 @@ func (s *Schedule) CiscoCommandTask() error {
 		if err != nil {
 			history.TaskMsg = err.Error()
 			history.LastSuccess = false
-		} else {history.TaskMsg = s.Message["msg"].(string)
+		} else {
+			history.TaskMsg = s.Message["msg"].(string)
 			if response.StatusCode == 200 {
 				resultByte, _ := req.Bytes()
 				err = json.Unmarshal(resultByte, &s.Message)
