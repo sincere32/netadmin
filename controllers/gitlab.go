@@ -345,7 +345,7 @@ func (c *GitlabController) GetGitlabRepositoryList() {
 
 // @Title Add Gitlab Repository
 // @Description Add Gitlab Repository
-// @Param   post_body body  string  true "{ 'repos_name': 'url', 'url': 'user', 'token': 'token'}"
+// @Param   post_body body  string  true "{ 'repos_name': 'repos_name', 'url': 'url', 'user':'user','token': 'token'}"
 // @Success 200 {object} models.Gitlab
 // @Failure 404 {object} utils.ReturnJson
 // @router /repository [post]
@@ -371,4 +371,71 @@ func (c *GitlabController) AddGitlabRepository() {
 		}
 	}
 
+}
+
+
+
+// @Title Update Gitlab Repository
+// @Description Update Gitlab Repository
+// @Param   post_body body  string  true "{ 'repos_name': 'repos_name', 'url': 'url', 'user':'user','token': 'token'}"
+// @Success 200 {object} models.Gitlab
+// @Failure 404 {object} utils.ReturnJson
+// @router /repository [patch]
+func (c *GitlabController) UpdateGitlabRepository() {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	gitlab := new(models.Gitlab)
+
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &gitlab)
+
+	if err != nil {
+		c.ReturnJson(0, err.Error())
+	} else {
+		var query = models.Gitlab{ReposName:gitlab.ReposName}
+
+		if o.Read(&query,"repos_name") != orm.ErrNoRows {
+
+			query.ReposName = gitlab.ReposName
+			query.Url = gitlab.Url
+			query.User = gitlab.User
+			query.Token = gitlab.Token
+
+			if _, updateErr := o.Update(&query); updateErr == nil {
+				c.ReturnOrmJson(0, 1, query)
+			} else {
+				c.ReturnJson(1, updateErr.Error())
+			}
+		}else {
+			c.ReturnJson(2, "No Such Repository")
+		}
+
+	}
+
+}
+
+
+// @Title Delete Repository
+// @Description Delete Repository
+// @Param   name path  string  true  "repository name"
+// @Success 200 {object} models.Device
+// @Failure 404 body is empty
+// @router /repository/:name [delete]
+func (c *GitlabController) DeleteGitlabRepository() {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	name := c.GetString(":name")
+
+	gitlab := models.Gitlab{ReposName: name}
+
+	if o.Read(&gitlab, "ReposName") != orm.ErrNoRows {
+		if count, delErr := o.Delete(&gitlab); delErr == nil {
+			c.ReturnOrmJson(0, count, gitlab)
+		} else {
+			c.ReturnOrmJson(1, 0, delErr.Error())
+		}
+	} else {
+		c.ReturnJson(2, "No Such Repository")
+	}
 }

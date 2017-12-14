@@ -2,8 +2,8 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8">
-    <title>Device Manager</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gitlab Manager</title>
+    <meta name="viewport" content="width=gitlab-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
 
     <link rel="shortcut icon" href="assets/img/favicon.ico"/>
@@ -52,7 +52,7 @@
                             <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
                         </ol>
                         <ol class="breadcrumb pull-right">
-                            <li><a href="javascript:;" data-url="page.html">Device Manager</a></li>
+                            <li><a href="javascript:;" data-url="page.html">Gitlab Manager</a></li>
                         </ol>
                     </div>
                     <!-- END RIBBON -->
@@ -65,7 +65,7 @@
                                         <div class="col-lg-12 col-md-12">
                                             <div class="pannel pannel-primary">
                                                 <div class="pannel-heading">
-                                                    <div class="panel-title"><h3>Device</h3></div>
+                                                    <div class="panel-title"><h3>Gitlab</h3></div>
                                                 </div>
                                                 <div class="panel-body">
                                                     <div class="row">
@@ -76,7 +76,7 @@
                                                                         <label class="title">Search </label>
                                                                         <input class="form-control"
                                                                                type="text"
-                                                                               id="device_search"
+                                                                               id="gitlab_search"
                                                                                placeholder="Search">
                                                                     </div>
                                                                 </form>
@@ -88,7 +88,7 @@
                                                                             class="fa fa-refresh"></i></button>
                                                                     <button class="btn btn-success btn-add"
                                                                             data-toggle="modal"
-                                                                            data-target="#modal_add_device"><i
+                                                                            data-target="#modal_add_gitlab"><i
                                                                             class="fa fa-plus"></i> Add
                                                                     </button>
                                                                 </div>
@@ -97,20 +97,21 @@
                                                     </div>
                                                     <br>
                                                     <div class="row">
-                                                        <table id="device_table"
+                                                        <table id="gitlab_table"
                                                                class="table table-bordered"
                                                                width="100%">
                                                             <thead>
                                                             <tr>
-                                                                <th>IP</th>
-                                                                <th>Device Name</th>
-                                                                <th>Device Type</th>
+                                                                <th>Repos Name</th>
+                                                                <th>Gitlab Url</th>
+                                                                <th>Gitlab User</th>
+                                                                <th>Gitlab Token</th>
                                                             </tr>
                                                             </thead>
                                                         </table>
                                                     </div>
-                                                    <!-- Add Device（Modal） -->
-                                                    <div class="modal fade" id="modal_add_device" tabindex="-1"
+                                                    <!-- Add Gitlab（Modal） -->
+                                                    <div class="modal fade" id="modal_add_gitlab" tabindex="-1"
                                                          role="dialog"
                                                          aria-labelledby="myModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
@@ -125,22 +126,28 @@
                                                                 <div class="modal-body">
                                                                     <form class="form" role="form">
                                                                         <div class="form-group">
-                                                                            <label>Host</label>
+                                                                            <label>Repos Name</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="add_host"
-                                                                                   placeholder="Host IP">
+                                                                                   id="add_repos"
+                                                                                   placeholder="Repos Name">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>Device Name</label>
+                                                                            <label>Gitlab Url</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="add_device_name"
-                                                                                   placeholder="Device Name">
+                                                                                   id="add_gitlab_url"
+                                                                                   placeholder="http://ip[:port]">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>Type</label>
+                                                                            <label>Gitlab User</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="add_device_type"
-                                                                                   placeholder="Device Type">
+                                                                                   id="add_gitlab_user"
+                                                                                   placeholder="Gitlab User Name">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Gitlab User Token</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="add_gitlab_token"
+                                                                                   placeholder="Gitlab User Token">
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -149,15 +156,15 @@
                                                                             data-dismiss="modal">Close
                                                                     </button>
                                                                     <button type="button" class="btn btn-primary"
-                                                                            onclick="add_device()">Add
+                                                                            onclick="add_gitlab()">Add
                                                                     </button>
                                                                 </div>
                                                             </div><!-- /.modal-content -->
                                                         </div><!-- /.modal -->
                                                     </div>
 
-                                                    <!-- Update Device（Modal） -->
-                                                    <div class="modal fade" id="modal_update_device" tabindex="-1"
+                                                    <!-- Update Gitlab（Modal） -->
+                                                    <div class="modal fade" id="modal_update_gitlab" tabindex="-1"
                                                          role="dialog"
                                                          aria-labelledby="myModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
@@ -168,29 +175,33 @@
                                                                         &times;
                                                                     </button>
                                                                     <h4 class="modal-title">
-                                                                        Device Edit</h4>
+                                                                        Gitlab Edit</h4>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form class="form" role="form">
                                                                         <div class="form-group">
-                                                                            <label>Host</label>
+                                                                            <label>Repos Name</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="update_host"
-                                                                                   placeholder="Host IP"
-                                                                                   readonly="readonly">
+                                                                                   id="update_repos"
+                                                                                   placeholder="Repos Name" readonly="readonly">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>Device Name</label>
+                                                                            <label>Gitlab Url</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="update_device_name"
-                                                                                   placeholder="Device Name">
+                                                                                   id="update_gitlab_url"
+                                                                                   placeholder="http://ip[:port]">
                                                                         </div>
                                                                         <div class="form-group">
-                                                                            <label>Type</label>
+                                                                            <label>Gitlab User</label>
                                                                             <input type="text" class="form-control"
-                                                                                   id="update_device_type"
-                                                                                   placeholder="Device Type"
-                                                                                   readonly="readonly">
+                                                                                   id="update_gitlab_user"
+                                                                                   placeholder="Gitlab User Name">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Gitlab User Token</label>
+                                                                            <input type="text" class="form-control"
+                                                                                   id="update_gitlab_token"
+                                                                                   placeholder="Gitlab User Token">
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -198,13 +209,13 @@
                                                                     <button type="button" style="float: left"
                                                                             class="btn btn-danger"
                                                                             data-dismiss="modal"
-                                                                            onclick="delete_device()">Delete
+                                                                            onclick="delete_gitlab()">Delete
                                                                     </button>
                                                                     <button type="button" class="btn btn-default"
                                                                             data-dismiss="modal">Close
                                                                     </button>
                                                                     <button type="button" class="btn btn-primary"
-                                                                            onclick="update_device()">Update
+                                                                            onclick="update_gitlab()">Update
                                                                     </button>
                                                                 </div>
                                                             </div><!-- /.modal-content -->
@@ -228,33 +239,35 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        format_device("/v1.0.0/device");
-        $("#device_search").on("keyup click", function () {
-            $('#device_table').DataTable().search(
-                $('#device_search').val()
+        format_gitlab("/v1.0.0/gitlab/repository");
+        $("#gitlab_search").on("keyup click", function () {
+            $('#gitlab_table').DataTable().search(
+                $('#gitlab_search').val()
             ).draw();
         });
     });
 
     function refresh() {
-        format_device("/v1.0.0/device");
+        format_gitlab("/v1/gitlab");
     }
 
-    // add device
-    function add_device() {
-        var host = $("#add_host").val();
-        var device_type = $("#add_device_type").val();
-        var device_name = $("#add_device_name").val();
+    // add gitlab
+    function add_gitlab() {
+        var repos_name = $("#add_repos").val();
+        var gitlab_url = $("#add_gitlab_url").val();
+        var gitlab_user = $("#add_gitlab_user").val();
+        var gitlab_token = $("#add_gitlab_token").val();
 
-        if (device_name != "" && host != "" && device_type != "") {
+        if (repos_name != "" && gitlab_url != "" && gitlab_user != "" && gitlab_token != "") {
             var post_json = JSON.stringify({
-                "device_name": device_name,
-                "ip": host,
-                "device_type": device_type
+                "repos_name": repos_name,
+                "url": gitlab_url,
+                "user": gitlab_user,
+                "token":gitlab_token
             });
             $.ajax({
                 type: "POST",
-                url: "/v1.0.0/device",
+                url: "/v1.0.0/gitlab/repository",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -262,8 +275,8 @@
                     if (data.status != 0) {
                         alert(data.msg);
                     } else {
-                        $("#modal_add_device").modal("hide");
-                        format_device("/v1.0.0/device");
+                        $("#modal_add_gitlab").modal("hide");
+                        format_gitlab("/v1.0.0/gitlab/repository");
                     }
                 },
                 error: function (data) {
@@ -272,24 +285,26 @@
                 }
             });
         } else {
-            alert("Device name or Host or Type is null")
+            alert("Gitlab name or Host or Type is null")
         }
     }
 
-    // update device
-    function update_device() {
-        var host = $("#update_host").val();
-        var device_type = $("#update_device_type").val();
-        var device_name = $("#update_device_name").val();
-        if (device_name != "" && host != "" && device_type != "") {
+    // update gitlab
+    function update_gitlab() {
+        var repos_name = $("#update_repos").val();
+        var gitlab_url = $("#update_gitlab_url").val();
+        var gitlab_user = $("#update_gitlab_user").val();
+        var gitlab_token = $("#update_gitlab_token").val();
+        if (repos_name != "" && gitlab_url != "" && gitlab_user != "" && gitlab_token != "") {
             var post_json = JSON.stringify({
-                "device_name": device_name,
-                "ip": host,
-                "device_type": device_type
+                "repos_name": repos_name,
+                "url": gitlab_url,
+                "user": gitlab_user,
+                "token":gitlab_token
             });
             $.ajax({
                 type: "PATCH",
-                url: "/v1.0.0/device",
+                url: "/v1.0.0/gitlab/repository",
                 data: post_json,
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -297,8 +312,8 @@
                     if (data.status != 0) {
                         alert(data.msg);
                     } else {
-                        $("#modal_update_device").modal("hide");
-                        format_device("/v1.0.0/device");
+                        $("#modal_update_gitlab").modal("hide");
+                        format_gitlab("/v1.0.0/gitlab/repository");
                     }
                 },
                 error: function (data) {
@@ -307,23 +322,23 @@
                 }
             });
         } else {
-            alert("Device name or Host or Device Type is null")
+            alert("Gitlab name or Host or Gitlab Type is null")
         }
     }
 
-    // Delete Device
-    function delete_device() {
-        var device_name = $("#update_device_name").val();
+    // Delete Gitlab
+    function delete_gitlab() {
+        var gitlab_name = $("#update_repos").val();
         $.ajax({
             type: "DELETE",
-            url: "/v1.0.0/device/" + device_name ,
+            url: "/v1.0.0/gitlab/repository/" + gitlab_name ,
             async: false,
             success: function (data) {
                 if (data.status != 0) {
                     alert(data.msg)
                 } else {
-                    $("#modal_update_device").modal("hide");
-                    format_device("/v1.0.0/device");
+                    $("#modal_update_gitlab").modal("hide");
+                    format_gitlab("/v1.0.0/gitlab/repository");
                 }
             },
             error: function (data) {
@@ -333,9 +348,9 @@
         });
     }
 
-    function format_device(url) {
+    function format_gitlab(url) {
 
-        var table = $('#device_table');
+        var table = $('#gitlab_table');
         table.dataTable().fnDestroy();
         table.dataTable({
             PaginationType: "full_numbers",
@@ -354,13 +369,14 @@
                 url: url
             },
             columns: [
-                {"data": "ip"},
-                {"data": "device_name"},
-                {"data": "device_type"}
+                {"data": "repos_name"},
+                {"data": "url"},
+                {"data": "user"},
+                {"data": "token"}
             ]
         });
         // Table Selected
-        $('#device_table tbody').on("click", "tr", function () {
+        $('#gitlab_table tbody').on("click", "tr", function () {
             if ($(this).hasClass("selected")) {
                 $(this).removeClass("selected");
             }
@@ -368,23 +384,27 @@
                 table.$("tr.selected").removeClass("selected");
                 $(this).addClass("selected");
 
-                var device_host = "";
-                var device_name = "";
-                var device_type = "";
+                var repos_name = "";
+                var gitlab_url = "";
+                var gitlab_user = "";
+                var gitlab_token = "";
+
                 var nTrs = table.dataTable().fnGetNodes();//fnGetNodes获取表格所有行，nTrs[i]表示第i行tr
                 for (var i = 0; i < nTrs.length; i++) {
                     if ($(nTrs[i]).hasClass("selected")) {
                         var t = table.dataTable().fnGetData(nTrs[i]);
-                        device_host = t["ip"];
-                        device_name = t["device_name"];
-                        device_type = t["device_type"];
+                        repos_name = t["repos_name"];
+                        gitlab_url = t["url"];
+                        gitlab_user = t["user"];
+                        gitlab_token = t["token"];
                         break;
                     }
                 }
-                $("#update_host").val(device_host);
-                $("#update_device_name").val(device_name);
-                $("#update_device_type").val(device_type);
-                $("#modal_update_device").modal("show");
+                $("#update_repos").val(repos_name);
+                $("#update_gitlab_url").val(gitlab_url);
+                $("#update_gitlab_user").val(gitlab_user);
+                $("#update_gitlab_token").val(gitlab_token);
+                $("#modal_update_gitlab").modal("show");
             }
         });
     }
