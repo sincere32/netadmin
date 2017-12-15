@@ -2,7 +2,7 @@ package schedules
 
 import (
 	"fmt"
-	"gitee.com/pippozq/netadmin/models"
+	"github.com/pippozq/netadmin/models"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
 	"time"

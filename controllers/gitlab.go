@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"gitee.com/pippozq/netadmin/models"
-	"gitee.com/pippozq/netadmin/utils"
+	"github.com/pippozq/netadmin/models"
+	"github.com/pippozq/netadmin/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"

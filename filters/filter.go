@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gitee.com/pippozq/netadmin/models"
+	"github.com/pippozq/netadmin/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"

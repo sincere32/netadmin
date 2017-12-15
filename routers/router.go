@@ -5,8 +5,8 @@
 package routers
 
 import (
-	"gitee.com/pippozq/netadmin/controllers"
-	"gitee.com/pippozq/netadmin/filters"
+	"github.com/pippozq/netadmin/controllers"
+	"github.com/pippozq/netadmin/filters"
 	"github.com/astaxie/beego"
 )
 

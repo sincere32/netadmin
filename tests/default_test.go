@@ -1,7 +1,7 @@
 package test
 
 import (
-	_ "gitee.com/pippozq/netadmin/routers"
+	_ "github.com/pippozq/netadmin/routers"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
