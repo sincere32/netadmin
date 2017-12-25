@@ -1,0 +1,87 @@
+{
+	"ImportPath": "github.com/pippozq/netadmin",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/astaxie/beego",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/config",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/context",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/context/param",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/grace",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/httplib",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/logs",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/orm",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/session",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/session/redis",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/toolbox",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/astaxie/beego/utils",
+			"Comment": "v1.9.0",
+			"Rev": "d96289a81bf67728cff7a19b067aaecc65a62ec6"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Comment": "v1.3.0-3-gb389d53",
+			"Rev": "b389d5392e340092642eec4e36754e0280ad1f8e"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Comment": "v1.3.0-3-gb389d53",
+			"Rev": "b389d5392e340092642eec4e36754e0280ad1f8e"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-173-gdd1fe20",
+			"Rev": "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-173-gdd1fe20",
+			"Rev": "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+		}
+	]
+}

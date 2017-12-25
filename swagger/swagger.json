@@ -1,0 +1,1375 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "NetAdmin API",
+        "description": "Netadmin has every tool to get any job done, so codename for the new netadmin APIs.",
+        "version": "1.0.0",
+        "contact": {
+            "email": "zengqi0529@163.com"
+        }
+    },
+    "basePath": "/v1.0.0",
+    "paths": {
+        "/authentication/": {
+            "post": {
+                "tags": [
+                    "authentication"
+                ],
+                "description": "SignIn",
+                "operationId": "AuthenticationController.SignIn",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',password: 'password'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"status\": \"-1 error 0 succeed 1 failed\", msg:\"\"}"
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/authentication/{name}": {
+            "get": {
+                "tags": [
+                    "authentication"
+                ],
+                "description": "Check Online Status",
+                "operationId": "AuthenticationController.Check Online Status",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "me",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"status\":\"0 expired 1 not expired 2 no user\", \"msg\":\"\"}"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "authentication"
+                ],
+                "description": "SignOut",
+                "operationId": "AuthenticationController.SignOut",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "me",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"status\":\" 0 success 1 error\", \"msg\":\"\"}"
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/cisco/command": {
+            "post": {
+                "tags": [
+                    "cisco"
+                ],
+                "description": "Run command",
+                "operationId": "CiscoController.Cisco Command",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{hosts:'[host1,host2,host3]',user: {'name':'name','password':'password'},command: command}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.CiscoCommandRec"
+                        }
+                    },
+                    "404": {
+                        "description": "body is emptys"
+                    }
+                }
+            }
+        },
+        "/cisco/config": {
+            "post": {
+                "tags": [
+                    "cisco"
+                ],
+                "description": "Execute Cisco Script",
+                "operationId": "CiscoController.Cisco Config",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{hosts:'[host1,host2,host3]',user: {'name':'name','password':'password'},'repos_name': 'repos_name','ref':'ref','file_path':'file_path}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.CiscoConfigRec"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/device/": {
+            "get": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Get Device",
+                "operationId": "DeviceContoller.Get Device List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/.device"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Add Device",
+                "operationId": "DeviceContoller.Add Device",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',super: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Update Device,if full and rw are false, then device is readonly",
+                "operationId": "DeviceContoller.Update Device",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "patch_body",
+                        "description": "{name:'your name ',full: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/device/types": {
+            "get": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Get Device Type",
+                "operationId": "DeviceContoller.Get Device Types",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/device/{name}": {
+            "delete": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Delete Device",
+                "operationId": "DeviceContoller.Delete Device",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "device name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/device/{type}": {
+            "get": {
+                "tags": [
+                    "device"
+                ],
+                "description": "Get Device By Type  \"types\" is key word!!!",
+                "operationId": "DeviceContoller.Get Device By Type",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "type",
+                        "description": "device type",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository": {
+            "get": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Get Gitlab Repository List",
+                "operationId": "GitlabController.Get Gitlab Repository List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Gitlab"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Gitlab Repository",
+                "operationId": "GitlabController.Add Gitlab Repository",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{ 'repos_name': 'repos_name', 'url': 'url', 'user':'user','token': 'token'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Gitlab"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Update Gitlab Repository",
+                "operationId": "GitlabController.Update Gitlab Repository",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{ 'repos_name': 'repos_name', 'url': 'url', 'user':'user','token': 'token'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Gitlab"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository/blobs": {
+            "get": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "GitlabController.Get Gitlab File Blob",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "repos_name",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "blob_id",
+                        "description": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/utils.ReturnJson"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository/branches": {
+            "get": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "GitlabController.Get Gitlab Branch",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "repos_name",
+                        "description": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.ReturnTable"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository/commits": {
+            "post": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Push Commits",
+                "operationId": "GitlabController.Add Gitlab Commits",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{ 'repos_name': 'project_name', 'file_name': 'file_name', 'file_content': 'file_content','branch':'branch','commit_message':'commit_message'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.AddGitlabCommitResp"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "GitlabController.Delete Gitlab Commits",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "repos_name",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "branch",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "file_name",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "commit_message",
+                        "description": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/utils.ReturnJson"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "GitlabController.Update Gitlab Commits",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{ 'repos_name': 'project_name', 'file_name': 'file_name', 'file_content': 'file_content','branch':'branch','commit_message':'commit_message'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.AddGitlabCommitResp"
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository/tree": {
+            "get": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "GitlabController.Get Gitlab Tree",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "repos_name",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "branch",
+                        "description": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.ReturnTable"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "{object} utils.ReturnJson"
+                    }
+                }
+            }
+        },
+        "/gitlab/repository/{name}": {
+            "delete": {
+                "tags": [
+                    "gitlab"
+                ],
+                "description": "Delete Repository",
+                "operationId": "GitlabController.Delete Repository",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "repository name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/juniper/command": {
+            "post": {
+                "tags": [
+                    "juniper"
+                ],
+                "description": "Run command",
+                "operationId": "JuniperController.Juniper Command",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{hosts:'[host1,host2,host3]',user: {'name':'name','password':'password'},command: command}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.JuniperCommandRec"
+                        }
+                    },
+                    "404": {
+                        "description": "body is emptys"
+                    }
+                }
+            }
+        },
+        "/juniper/config": {
+            "post": {
+                "tags": [
+                    "juniper"
+                ],
+                "description": "Execute Juniper Script",
+                "operationId": "JuniperController.Juniper Config",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{hosts:'[host1,host2,host3]',user: {'name':'name','password':'password'},'repos_name': 'repos_name','ref':'ref','file_path':'file_path}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.JuniperConfigRec"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/role/": {
+            "get": {
+                "tags": [
+                    "role"
+                ],
+                "description": "Get Role",
+                "operationId": "RoleContoller.Get Role List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Role"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "role"
+                ],
+                "description": "Add Role,if full and rw are false, then role is readonly",
+                "operationId": "RoleContoller.Add Role",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',super: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "role"
+                ],
+                "description": "Update Role,if full and rw are false, then role is readonly",
+                "operationId": "RoleContoller.Update Role",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "patch_body",
+                        "description": "{name:'your name ',full: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/role/{name}": {
+            "get": {
+                "tags": [
+                    "role"
+                ],
+                "description": "Get Role",
+                "operationId": "RoleContoller.Get Role",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "role name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "role"
+                ],
+                "description": "Delete Role",
+                "operationId": "RoleContoller.Delete Role",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "role name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/task/": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "description": "Get Task List",
+                "operationId": "TaskController.Get Task List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/.task"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "description": "Add Task",
+                "operationId": "TaskController.Add Task",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',super: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Task"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "task"
+                ],
+                "description": "Delete Device",
+                "operationId": "TaskController.Delete Task",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "name",
+                        "description": "task name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "ip",
+                        "description": "device ip",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Device"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "task"
+                ],
+                "description": "Update Task",
+                "operationId": "TaskController.Update Task",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',super: false, rw:false}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.Task"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/task/{id}/history": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "description": "Get Task List",
+                "operationId": "TaskController.Get Task History  List",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "task id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TaskHistory"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/user/": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get User",
+                "operationId": "UserController.Get User List",
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.ReturnTable"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "None"
+                    },
+                    "405": {
+                        "description": "Not Allowed"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Add User,name password role_id is required",
+                "operationId": "UserController.Add User",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "post_body",
+                        "description": "{name:'your name ',password: 'password', role_id:'id',tel:'12345678901', email:'xx@ff.com'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Update User,User,name password role_id is required",
+                "operationId": "UserController.Update User",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "patch_body",
+                        "description": "{name:'your name ',password: 'password', role_id:id,tel:12345678901, email:'xx@ff.com'}",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/user/{name}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get User",
+                "operationId": "UserController.Get User",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "User name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Delete User",
+                "operationId": "UserController.Delete User",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "User name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        ".device": {
+            "type": "object"
+        },
+        ".false": {
+            "type": "object"
+        },
+        ".task": {
+            "type": "object"
+        },
+        "models.AddGitlabCommitResp": {
+            "title": "AddGitlabCommitResp",
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                },
+                "commit_message": {
+                    "type": "string"
+                },
+                "file_content": {
+                    "type": "string"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "repos_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CiscoCommandRec": {
+            "title": "CiscoCommandRec",
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "hosts": {},
+                "port": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.CiscoUser"
+                }
+            }
+        },
+        "models.CiscoConfigRec": {
+            "title": "CiscoConfigRec",
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string"
+                },
+                "hosts": {},
+                "ref": {
+                    "type": "string"
+                },
+                "repos_name": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.CiscoUser"
+                }
+            }
+        },
+        "models.CiscoUser": {
+            "title": "CiscoUser",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Device": {
+            "title": "Device",
+            "type": "object",
+            "properties": {
+                "device_name": {
+                    "type": "string"
+                },
+                "device_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ip": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Gitlab": {
+            "title": "Gitlab",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "repos_name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.JuniperCommandRec": {
+            "title": "JuniperCommandRec",
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "hosts": {},
+                "port": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.JuniperUser"
+                }
+            }
+        },
+        "models.JuniperConfigRec": {
+            "title": "JuniperConfigRec",
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string"
+                },
+                "hosts": {},
+                "ref": {
+                    "type": "string"
+                },
+                "repos_name": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.JuniperUser"
+                }
+            }
+        },
+        "models.JuniperUser": {
+            "title": "JuniperUser",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Role": {
+            "title": "Role",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rw": {
+                    "type": "boolean"
+                },
+                "super": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Task": {
+            "title": "Task",
+            "type": "object",
+            "properties": {
+                "Created": {
+                    "type": "string",
+                    "format": "string"
+                },
+                "branch": {
+                    "type": "string"
+                },
+                "cron_time": {
+                    "type": "string"
+                },
+                "device_ip": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "file_path": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "last_run_time": {
+                    "type": "string",
+                    "format": "string"
+                },
+                "last_success": {
+                    "type": "boolean"
+                },
+                "module": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "repos_name": {
+                    "type": "string"
+                },
+                "task_name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TaskHistory": {
+            "title": "TaskHistory",
+            "type": "object",
+            "properties": {
+                "Task": {
+                    "$ref": "#/definitions/models.Task"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "last_run_time": {
+                    "type": "string",
+                    "format": "string"
+                },
+                "last_success": {
+                    "type": "boolean"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "next_run_time": {
+                    "type": "string",
+                    "format": "string"
+                }
+            }
+        },
+        "models.User": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/models.Role"
+                },
+                "tel": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.ReturnJson": {
+            "title": "ReturnJson",
+            "type": "object",
+            "properties": {
+                "msg": {
+                    "$ref": "#/definitions/347.0xc420e76c60.false"
+                },
+                "status": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "utils.ReturnTable": {
+            "title": "ReturnTable",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/249.0xc420e76bd0.false"
+                },
+                "recordsFiltered": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "recordsTotal": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "status": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        }
+    }
+}

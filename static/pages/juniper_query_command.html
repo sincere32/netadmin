@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title>Juniper</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <!--<meta name="renderer" content="webkit">-->
+
+    <link rel="shortcut icon" href="../assets/img/favicon.ico"/>
+    <!-- Loading Bootstrap -->
+
+    <link href="../assets/css/backend.min.css" rel="stylesheet">
+
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="../assets/js/html5shiv.js"></script>
+    <script src="../assets/js/respond.min.js"></script>
+    <![endif]-->
+    <!--select -->
+    <link rel="stylesheet" type="text/css" href="../assets/css/multi-select.css">
+    <script src="../assets/js/jquery-3.2.1.min.js"></script>
+    <script src="../assets/js/jquery.multi-select.js"></script>
+</head>
+
+<body class="inside-header inside-aside ">
+<div id="main" role="main">
+    <div class="tab-content tab-addtabs">
+        <div id="content">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <section class="content-header hide">
+                        <h1> Dashboard
+                            <small>Control panel</small>
+                        </h1>
+                    </section>
+                    <!-- RIBBON -->
+                    <div id="ribbon">
+                        <ol class="breadcrumb pull-left">
+                            <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                        </ol>
+                        <ol class="breadcrumb pull-right">
+                            <li><a href="javascript:;" data-url="page.html">Juniper Query Command</a></li>
+                        </ol>
+                    </div>
+                    <!-- END RIBBON -->
+                    <div class="content">
+                        <div class="panel panel-default panel-intro">
+
+                            <div class="panel-body">
+                                <div id="myTabContent" class="tab-content">
+                                    <div class="tab-pane fade active in" id="one">
+                                        <div class="col-lg-8 col-md-4">
+                                            <div class="pannel pannel-primary">
+                                                <div class="pannel-heading">
+                                                    <div class="panel-title"><h3>Juniper Query Command</h3></div>
+                                                </div>
+                                                <div class="panel-body">
+                                                    <iframe name="juniper_iframe" style="display:none;"></iframe>
+                                                    <form class="form-horizontal" role="form" target="juiper_ifame"
+                                                          onsubmit="return false;">
+                                                        <div class="form-group">
+                                                            <label>Host</label>
+                                                            <select id="host" multiple="multiple">
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>User Name</label>
+                                                            <input type="text" class="form-control" id="name"
+                                                                   placeholder="User Name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Password</label>
+                                                            <input type="password" class="form-control" id="password"
+                                                                   placeholder="User Password">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Command</label>
+                                                            <input type="text" class="form-control" id="command"
+                                                                   placeholder="command">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button class="btn btn-success"
+                                                                    onclick="run_junos_command()">Submit
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="panel pannel-primary">
+                                                <div class="pannel-heading">
+                                                    <div class="panel-title"><h3>Juniper Result</h3></div>
+                                                </div>
+                                                <div class="panel-body">
+                                                    <ul class="list-group" id="loading">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    function run_junos_command() {
+        var img = "<img src=\"/assets/img/loading_moji.gif\" class=\"img-responsive\" alt=\"Loading\">";
+        var loading = $("#loading");
+        var hosts = new Array();
+        $("#host :selected").each(function (i, selected) {
+            hosts.push($(selected).text());
+        });
+        var name = $("#name").val();
+        var password = $("#password").val();
+        var command = $("#command").val();
+        var url = "/v1.0.0/juniper/command";
+
+        var post_json = JSON.stringify({
+            "hosts": hosts,
+            "command": command,
+            "user": {
+                "name": name,
+                "password": password
+            }
+        });
+        loading.empty();
+        loading.append(img);
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: post_json,
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                loading.empty();
+                loading.append("                                                    <textarea\n" +
+                    "                                                            style=\"max-width:800px;min-height: 400px;min-width: 600px\"\n" +
+                    "                                                            id=\"result\" readonly=\"readonly\">\n" +
+                    "                                                    </textarea>");
+                $("#result").val(data.msg);
+            },
+            error: function (data, status) {
+                alert(status);
+                loading.empty();
+                loading.append(data.msg);
+            }
+        });
+    }
+</script>
+<script src="../assets/js/device.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Get Hosts
+        GetHosts($("#host"),"juniper");
+    });
+</script>
+</html>

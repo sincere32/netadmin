@@ -49,6 +49,9 @@ func main() {
 
 	beego.BConfig.WebConfig.DirectoryIndex = true
 	beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+	beego.BConfig.WebConfig.StaticDir["/"] = "static"
+	beego.BConfig.WebConfig.StaticDir["/assets"] = "static/assets"
+	beego.BConfig.WebConfig.StaticDir["/pages"] = "static/pages"
 
 	err := InitDBPool(*initDb)
 	if err != nil {
