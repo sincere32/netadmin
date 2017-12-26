@@ -65,8 +65,8 @@ ENV_MODE is the mode in  configuration. check [app.conf.example](https://github.
 
 ---
 
-http://ip:8081 is netadmin console
-http://ip:8081/swagger is api doc
+http://ip:8081 is netadmin console  
+http://ip:8081/swagger is api doc   
 http://ip:8088 is the admin console
 
 ---
