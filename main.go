@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/pippozq/netadmin/models"
 	_ "github.com/pippozq/netadmin/routers"
@@ -13,9 +12,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InitDBPool(initDb string) error {
+func init() {
 	orm.Debug, _ = beego.AppConfig.Bool("debug")
 	orm.RegisterDriver("postgres", orm.DRPostgres)
+
 	maxIdleConn, err := beego.AppConfig.Int("max_idle_conn")
 	if err != nil {
 		maxIdleConn = 10
@@ -27,25 +27,24 @@ func InitDBPool(initDb string) error {
 		maxOpenConn = 10
 	}
 
-	err = orm.RegisterDataBase("default", "postgres", fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+	orm.RegisterDataBase("default", "postgres", fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		beego.AppConfig.String("user"),
 		beego.AppConfig.String("password"),
 		beego.AppConfig.String("db_name"),
 		beego.AppConfig.String("host"),
 		beego.AppConfig.String("port")), maxIdleConn, maxOpenConn)
-	if err == nil && initDb == "yes" {
-		orm.RunSyncdb("default", false, true)
-	}
 
-	return err
+	orm.RunSyncdb("default", false, true)
+
+	initUserDone := true
+	initUserDone = models.InitUser()
+	if !initUserDone {
+		beego.Error("Init User Error")
+	}
 }
 
 func main() {
 	beego.SetLevel(beego.LevelInformational)
-
-	initDb := flag.String("sync_db", "no", "init db")
-	initUser := flag.String("init_user", "no", "Init Admin User")
-	flag.Parse()
 
 	beego.BConfig.WebConfig.DirectoryIndex = true
 	beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
@@ -53,21 +52,8 @@ func main() {
 	beego.BConfig.WebConfig.StaticDir["/assets"] = "static/assets"
 	beego.BConfig.WebConfig.StaticDir["/pages"] = "static/pages"
 
-	err := InitDBPool(*initDb)
-	if err != nil {
-		beego.Error(fmt.Sprintf("Mode:%s, Init DB Error:%s", *initDb, err))
-	} else {
-		initUserDone := true
-		if *initUser == "yes" {
-			initUserDone = models.InitUser()
-		}
-		if initUserDone {
-			schedules.InitTask()
-			beego.ErrorController(&utils.BaseController{})
-			beego.Run()
-		} else {
-			beego.Error("Init User Error")
-		}
+	schedules.InitTask()
+	beego.ErrorController(&utils.BaseController{})
+	beego.Run()
 
-	}
 }

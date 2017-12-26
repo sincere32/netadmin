@@ -44,11 +44,6 @@ func InitUser() bool {
 		if _, err := o.Insert(&admin); err != nil {
 			return false
 		}
-	} else {
-		admin.Password = "696d29e0940a4957748fe3fc9efd22a3"
-		if _, err := o.Update(&admin); err != nil {
-			return false
-		}
 	}
 	return true
 }
