@@ -1,14 +1,8 @@
 #!/bin/sh
-app="netadmin"
 go=$(which go)
 local_dir=$(cd `dirname $0`; pwd)
+if [ ! -f $GOPATH/bin/bee ];then
+   $go get github.com/beego/bee
+fi
 
-# install lib
-$go get github.com/astaxie/beego
-$go get github.com/lib/pq
-$go get github.com/astaxie/beego/session
-$go get github.com/garyburd/redigo/redis
-
-export ENV_MODE=$1
-
-cd $local_dir && $go build && ./netadmin
+cd $local_dir && $GOPATH/bin/bee run -gendoc=true -downdoc=true
