@@ -1,7 +1,7 @@
 # Netadmin
 ## What's This?
 - Netadmin is built for network engineer to manage the network deivices(for now just juniper and cisco) with [beego](https://beego.me/) and [FastAdmin](http://fastadmin.net)
-- Netadmin is just platform which provides management for deivces, scripts, users,roles, gitlab
+- Netadmin is just platform which provides management for deivces, scripts, users,roles, gitlab, schedules
 - Using gitlab as the store of scripts and Netadmin gets the scripts from it by gitlab user token, so generate it first
 - Script or command is sent to [netadmin-driver](https://github.com/pippozq/netadmin-driver)
 
