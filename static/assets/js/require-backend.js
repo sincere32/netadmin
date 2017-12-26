@@ -177,7 +177,7 @@ require(['jquery','cookie'], function ($) {
             url: "/v1.0.0/authentication/"+$.cookie("nickname"),
             success: function (data) {
                 if (data.status != 0) {
-                    window.location.href = "signin.html";
+                    window.location.href = "pages/signin.html";
                 }else{
                     $(" p").text($.cookie("nickname"));
                     $("#user_name").text($.cookie("nickname"));
@@ -190,7 +190,7 @@ require(['jquery','cookie'], function ($) {
 
         $("#signout").click(function(){
             if (document.cookie.indexOf("nickname") == -1){
-                window.location.href = 'signin.html';
+                window.location.href = 'pages/signin.html';
             }else{
                 var nickname = $.cookie("nickname");
                 $.ajax({
@@ -198,7 +198,7 @@ require(['jquery','cookie'], function ($) {
                     url: "/v1.0.0/authentication/"+nickname,
                     success: function (data) {
                         if (data.status == 0 || data.status == 1) {
-                            window.location.href = "signin.html";
+                            window.location.href = "pages/signin.html";
                         }else {
                             alert(data.msg);
                         }
